@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel – GreenWork</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+/* ── Dark admin theme ── */
+body { background:#0f1419; color:#e2e8e4; }
+nav  { background:rgba(15,20,25,.96)!important; border-bottom-color:rgba(255,255,255,.07)!important; }
+.nav-logo { color:white!important; }
+.nav-links a { color:rgba(255,255,255,.65)!important; }
+.nav-links a:hover { background:rgba(255,255,255,.08)!important; color:white!important; }
+
+/* ── Hero ── */
+.admin-hero {
+  background: linear-gradient(135deg,#0d1117,#0f1e14,#162813);
+  padding: calc(var(--nav-h)+44px) 5% 60px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.admin-hero h1 { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:white; margin-bottom:6px; }
+.admin-hero p  { color:rgba(255,255,255,.5); font-size:.9rem; }
+.admin-meta    { display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; }
+.admin-badge   {
+  display:inline-flex; align-items:center; gap:7px;
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+  padding:5px 14px; border-radius:50px; font-size:.78rem; color:rgba(255,255,255,.7);
+}
+
+.admin-body { padding:32px 5%; }
+/* offline banner */
+.offline-banner {
+  display:none; background:#7b3400; color:#ffe0b2; padding:10px 5%;
+  font-size:.84rem; align-items:center; gap:12px; justify-content:space-between;
+}
+.offline-banner a { color:#ffcc80; font-weight:700; }
+
+/* ── Stat cards ── */
+.asc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:14px; margin-bottom:28px; }
+.asc {
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius); padding:20px; border-left:3px solid var(--green-bright);
+}
+.asc.gold   { border-left-color:var(--gold); }
+.asc.red    { border-left-color:#e74c3c; }
+.asc.blue   { border-left-color:#4cc9f0; }
+.asc h3     { font-size:.68rem; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,.38); margin-bottom:8px; }
+.asc .asc-n { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:700; color:white; }
+.asc .asc-s { font-size:.73rem; color:rgba(255,255,255,.4); margin-top:4px; }
+
+/* ── Panel box ── */
+.ap {
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius); overflow:hidden; margin-bottom:22px;
+}
+.ap-head {
+  padding:16px 22px; border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+}
+.ap-head h2 { font-size:1rem; font-weight:700; color:white; display:flex; align-items:center; gap:8px; }
+.ap-head p  { font-size:.78rem; color:rgba(255,255,255,.4); margin-top:2px; }
+
+/* ── Language tabs ── */
+.lang-tabs { display:flex; gap:0; flex-wrap:wrap; border-bottom:1px solid rgba(255,255,255,.07); padding:0 22px; }
+.lang-tab {
+  padding:10px 18px; border:none; background:none; cursor:pointer;
+  font-family:'Sora',sans-serif; font-size:.84rem; font-weight:600;
+  color:rgba(255,255,255,.45); border-bottom:2px solid transparent;
+  transition:all .2s; margin-bottom:-1px; display:flex; align-items:center; gap:7px;
+}
+.lang-tab:hover  { color:rgba(255,255,255,.75); }
+.lang-tab.active { color:var(--green-light); border-bottom-color:var(--green-bright); }
+.lang-tab .lt-dot {
+  width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.2); flex-shrink:0;
+}
+.lang-tab.has-videos .lt-dot { background:var(--green-bright); }
+
+/* ── Lang panel ── */
+.lang-panel { display:none; padding:22px; }
+.lang-panel.active { display:block; }
+
+/* ── Module upload rows ── */
+.mod-upload-row {
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius-sm); padding:18px 20px; margin-bottom:14px;
+  transition:border-color .2s;
+}
+.mod-upload-row:hover     { border-color:rgba(64,145,108,.35); }
+.mod-upload-row.uploaded  { border-color:rgba(64,145,108,.5); background:rgba(64,145,108,.04); }
+
+.mur-top { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+.mur-icon {
+  width:46px; height:46px; border-radius:14px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:1.3rem;
+  background:rgba(64,145,108,.15);
+}
+.mur-info h3 { font-size:.96rem; font-weight:700; color:white; margin-bottom:2px; }
+.mur-info p  { font-size:.76rem; color:rgba(255,255,255,.42); }
+.mur-status  { margin-left:auto; flex-shrink:0; }
+
+/* Upload zone */
+.upload-zone {
+  border:2px dashed rgba(255,255,255,.14); border-radius:10px;
+  padding:22px 20px; text-align:center; cursor:pointer;
+  transition:all .25s; background:rgba(255,255,255,.02);
+  position:relative; overflow:hidden;
+}
+.upload-zone:hover         { border-color:var(--green-bright); background:rgba(64,145,108,.06); }
+.upload-zone.drag-over     { border-color:var(--green-light); background:rgba(64,145,108,.1); }
+.upload-zone.has-file      { border-color:var(--green-bright); background:rgba(64,145,108,.07); }
+.upload-zone input[type=file] { display:none; }
+.uz-icon   { font-size:1.8rem; display:block; margin-bottom:8px; }
+.uz-title  { font-size:.88rem; font-weight:600; color:rgba(255,255,255,.8); margin-bottom:4px; }
+.uz-sub    { font-size:.74rem; color:rgba(255,255,255,.38); }
+.uz-accept { font-size:.72rem; color:rgba(255,255,255,.28); margin-top:6px; }
+
+/* Uploaded file info */
+.file-info {
+  display:flex; align-items:center; gap:12px; padding:12px 14px;
+  background:rgba(64,145,108,.1); border-radius:8px;
+  border:1px solid rgba(64,145,108,.25); margin-top:12px;
+}
+.fi-icon { font-size:1.4rem; flex-shrink:0; }
+.fi-name { font-size:.85rem; font-weight:600; color:var(--green-light); flex:1; word-break:break-all; }
+.fi-size { font-size:.74rem; color:rgba(255,255,255,.45); margin-top:2px; }
+.fi-del  {
+  background:rgba(231,76,60,.15); border:none; color:#e74c3c; border-radius:8px;
+  padding:6px 12px; cursor:pointer; font-size:.78rem; font-weight:600;
+  font-family:'Sora',sans-serif; transition:background .2s; flex-shrink:0;
+}
+.fi-del:hover { background:rgba(231,76,60,.3); }
+
+/* Progress bar during upload processing */
+.upload-progress {
+  height:4px; background:rgba(255,255,255,.1); border-radius:99px; overflow:hidden; margin-top:10px;
+}
+.upload-progress-fill {
+  height:100%; border-radius:99px;
+  background:linear-gradient(90deg,var(--green-bright),var(--gold));
+  transition:width .3s;
+}
+
+/* Users table */
+table { width:100%; border-collapse:collapse; }
+th {
+  padding:11px 16px; background:rgba(255,255,255,.03);
+  text-align:left; font-size:.72rem; text-transform:uppercase;
+  letter-spacing:.5px; color:rgba(255,255,255,.35); font-weight:700;
+}
+td { padding:13px 16px; border-bottom:1px solid rgba(255,255,255,.05); font-size:.87rem; color:rgba(255,255,255,.78); }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(255,255,255,.02); }
+td strong { color:white; }
+
+.apill { display:inline-flex; align-items:center; gap:4px; padding:4px 11px; border-radius:50px; font-size:.72rem; font-weight:600; }
+.ap-green { background:rgba(64,145,108,.2);  color:#74c69d; }
+.ap-gold  { background:rgba(233,196,106,.15); color:#e9c46a; }
+.ap-red   { background:rgba(231,76,60,.15);   color:#e74c3c; }
+.ab { padding:6px 13px; border-radius:50px; border:none; font-size:.77rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:'Sora',sans-serif; }
+.ab-approve { background:rgba(64,145,108,.2); color:#74c69d; }
+.ab-approve:hover { background:rgba(64,145,108,.4); color:white; }
+.ab-pay { background:rgba(76,201,240,.1); color:#4cc9f0; }
+.ab-pay:hover { background:rgba(76,201,240,.25); color:white; }
+
+/* Storage usage bar */
+.storage-bar-wrap { margin-top:10px; }
+.storage-bar { height:6px; background:rgba(255,255,255,.1); border-radius:99px; overflow:hidden; }
+.storage-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--green-bright),var(--gold)); }
+.storage-label { font-size:.73rem; color:rgba(255,255,255,.45); margin-top:6px; }
+
+/* API ref */
+.api-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:20px 22px; }
+.api-col h4 { font-size:.72rem; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,.35); margin-bottom:12px; }
+.api-line { display:flex; gap:10px; margin-bottom:8px; font-family:monospace; font-size:.82rem; }
+.api-method { padding:2px 8px; border-radius:4px; font-size:.72rem; font-weight:700; }
+.api-method.post { background:rgba(64,145,108,.25); color:#74c69d; }
+.api-method.get  { background:rgba(233,196,106,.2); color:#e9c46a; }
+.api-path { color:rgba(255,255,255,.6); }
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html" style="color:white;">🌿 Green<span class="gw">Work</span></a>
+  <div class="nav-links"><a href="index.html">← Back to Site</a></div>
+  <div class="nav-actions">
+    <span style="color:rgba(255,255,255,.4);font-size:.8rem;margin-right:6px;">⚙️ Admin Mode</span>
+    <a href="index.html" class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7);">Exit Admin</a>
+  </div>
+</nav>
+
+<div class="offline-banner" id="backendOfflineBanner">
+  ⚠️ <strong>Backend server not connected.</strong> Videos upload to local browser storage only.
+  Start your backend server at <code>http://localhost:5000</code> for full functionality.
+  <a href="https://github.com/greenwork/backend#readme" target="_blank">Setup Guide →</a>
+</div>
+
+<div class="admin-hero">
+  <h1>⚙️ GreenWork Admin Panel</h1>
+  <p>Upload training videos per language, manage users, approve training and handle payments</p>
+  <div class="admin-meta">
+    <div class="admin-badge">👤 Admin</div>
+    <div class="admin-badge" id="storageInfo">💾 Calculating storage…</div>
+    <div class="admin-badge" id="videosCount">🎬 0 videos uploaded</div>
+  </div>
+</div>
+
+<div class="admin-body">
+
+  <!-- Stat cards -->
+  <div class="asc-grid">
+    <div class="asc"><h3>Total Users</h3><div class="asc-n" id="totalUsersN">—</div><div class="asc-s">Registered</div></div>
+    <div class="asc gold"><h3>Videos Uploaded</h3><div class="asc-n" id="totalVidsN">0</div><div class="asc-s">of 30 slots</div></div>
+    <div class="asc red"><h3>Pending Approval</h3><div class="asc-n">—</div><div class="asc-s">Training requests</div></div>
+    <div class="asc blue"><h3>Active Workers</h3><div class="asc-n">—</div><div class="asc-s">On farms</div></div>
+  </div>
+
+  <!-- ═══ VIDEO UPLOAD PANEL ═══ -->
+  <div class="ap">
+    <div class="ap-head">
+      <div>
+        <h2>🎬 Training Video Upload</h2>
+        <p>Upload MP4 / WebM videos per language. Users can only watch — no YouTube needed.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span style="font-size:.75rem;color:rgba(255,255,255,.35);">Max ~50MB per video recommended</span>
+        <button class="btn btn-primary btn-sm" onclick="refreshVideoPanel()">🔄 Refresh</button>
+      </div>
+    </div>
+
+    <!-- Language tabs -->
+    <div class="lang-tabs" id="langTabs"></div>
+
+    <!-- Language panels -->
+    <div id="langPanels"></div>
+
+    <!-- Storage usage -->
+    <div style="padding:14px 22px;border-top:1px solid rgba(255,255,255,.07);">
+      <div class="storage-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:.73rem;color:rgba(255,255,255,.4);margin-bottom:6px;">
+          <span>localStorage Usage (videos)</span>
+          <span id="storageUsed">—</span>
+        </div>
+        <div class="storage-bar"><div class="storage-fill" id="storageFill" style="width:0%"></div></div>
+        <p class="storage-label">⚠️ Browser localStorage limit is ~5-10MB. Use compressed MP4 videos for best results.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ USERS TABLE ═══ -->
+  <div class="ap">
+    <div class="ap-head">
+      <div><h2>👥 Registered Users</h2><p>All users who have registered on GreenWork</p></div>
+      <button class="btn btn-primary btn-sm" onclick="toast('Invite sent!','success')">+ Invite User</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Location</th><th>Language</th><th>Training</th><th>Action</th></tr>
+        </thead>
+        <tbody id="usersTbody">
+          <tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.3);padding:28px;">No registered users yet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ WORK ASSIGNMENTS ═══ -->
+  <div class="ap">
+    <div class="ap-head">
+      <div><h2>💼 Work Assignments &amp; Payments</h2></div>
+      <button class="btn btn-primary btn-sm" onclick="toast('Assignment form opened!','success')">+ New Assignment</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Worker</th><th>Task</th><th>Location</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Suresh Reddy</strong></td><td>🌾 Crop Planting</td><td>Karimnagar, TS</td><td><strong style="color:var(--gold);">₹12,000</strong></td><td><span class="apill ap-gold">Pending</span></td><td><button class="ab ab-pay" onclick="toast('₹12,000 released!','success')">💸 Release</button></td></tr>
+          <tr><td><strong>Mahesh Babu</strong></td><td>🏡 Farm Maintenance</td><td>Adilabad, TS</td><td><strong style="color:var(--gold);">₹11,000</strong></td><td><span class="apill ap-green">Paid ✅</span></td><td><button class="ab ab-approve" onclick="toast('Receipt sent!','success')">📧 Receipt</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ API REFERENCE ═══ -->
+  <div class="ap">
+    <div class="ap-head"><h2>🔌 Backend API Reference</h2></div>
+    <div class="api-grid">
+      <div class="api-col">
+        <h4>User APIs</h4>
+        <div class="api-line"><span class="api-method post">POST</span><span class="api-path">/api/register</span></div>
+        <div class="api-line"><span class="api-method post">POST</span><span class="api-path">/api/login</span></div>
+        <div class="api-line"><span class="api-method get">GET</span><span class="api-path">/api/profile</span></div>
+        <div class="api-line"><span class="api-method get">GET</span><span class="api-path">/api/training-status</span></div>
+        <div class="api-line"><span class="api-method post">POST</span><span class="api-path">/api/complete-training</span></div>
+        <div class="api-line"><span class="api-method get">GET</span><span class="api-path">/api/assigned-work</span></div>
+      </div>
+      <div class="api-col">
+        <h4>Admin APIs</h4>
+        <div class="api-line"><span class="api-method get">GET</span><span class="api-path">/api/admin/users</span></div>
+        <div class="api-line"><span class="api-method post">POST</span><span class="api-path">/api/admin/upload-video</span></div>
+        <div class="api-line"><span class="api-method post">POST</span><span class="api-path">/api/admin/assign-work</span></div>
+        <div class="api-line"><span class="api-method post">POST</span><span class="api-path">/api/admin/approve-training</span></div>
+        <div class="api-line"><span class="api-method post">POST</span><span class="api-path">/api/admin/update-payment</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /admin-body -->
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/api.js"></script>
+<script>
+const LANGS = GW.getAvailableLangs();
+const MODS  = Object.entries(MODULE_INFO).map(([id, d]) => ({ id, ...d }));
+
+/* ── Build tabs + panels ── */
+function buildVideoPanel() {
+  const tabsEl   = document.getElementById('langTabs');
+  const panelsEl = document.getElementById('langPanels');
+  tabsEl.innerHTML   = '';
+  panelsEl.innerHTML = '';
+
+  LANGS.forEach((lang, li) => {
+    const uploadedCount = MODS.filter(m => VID.exists(lang.code, m.id)).length;
+    const hasVids = uploadedCount > 0;
+
+    // Tab
+    const tab = document.createElement('button');
+    tab.className = `lang-tab ${hasVids ? 'has-videos' : ''} ${li === 0 ? 'active' : ''}`;
+    tab.innerHTML = `<span class="lt-dot"></span>${lang.flag} ${lang.label} <span style="font-size:.7rem;opacity:.55;">(${uploadedCount}/5)</span>`;
+    tab.onclick = () => switchLangTab(lang.code);
+    tab.setAttribute('data-lang', lang.code);
+    tabsEl.appendChild(tab);
+
+    // Panel
+    const panel = document.createElement('div');
+    panel.className = `lang-panel ${li === 0 ? 'active' : ''}`;
+    panel.id = `lp-${lang.code}`;
+    panel.innerHTML = MODS.map(mod => buildModRow(lang.code, mod)).join('');
+    panelsEl.appendChild(panel);
+  });
+
+  updateStats();
+}
+
+function buildModRow(langCode, mod) {
+  const vid     = VID.get(langCode, mod.id);
+  const uploaded = !!vid;
+  return `
+  <div class="mod-upload-row ${uploaded ? 'uploaded' : ''}" id="mur-${langCode}-${mod.id}">
+    <div class="mur-top">
+      <div class="mur-icon">${mod.icon}</div>
+      <div class="mur-info">
+        <h3>Module ${MODS.indexOf(mod)+1}: ${mod.title}</h3>
+        <p>${uploaded ? `Uploaded: ${vid.name} · ${VID.formatSize(vid.size)}` : 'No video uploaded yet'}</p>
+      </div>
+      <div class="mur-status">
+        ${uploaded
+          ? `<span class="apill ap-green">✅ Ready</span>`
+          : `<span class="apill ap-red">📭 No Video</span>`
+        }
+      </div>
+    </div>
+
+    ${uploaded ? `
+    <div class="file-info">
+      <span class="fi-icon">🎬</span>
+      <div style="flex:1;">
+        <div class="fi-name">${vid.name}</div>
+        <div class="fi-size">${VID.formatSize(vid.size)} · Uploaded ${new Date(vid.saved).toLocaleDateString('en-IN')}</div>
+      </div>
+      <button class="fi-del" onclick="deleteVideo('${langCode}','${mod.id}')">🗑 Remove</button>
+    </div>
+    ` : ''}
+
+    <div class="upload-zone ${uploaded ? '' : ''}" id="uz-${langCode}-${mod.id}"
+         onclick="document.getElementById('fi-${langCode}-${mod.id}').click()"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="handleDrop(event,'${langCode}','${mod.id}')">
+      <input type="file" id="fi-${langCode}-${mod.id}" accept="video/mp4,video/webm,video/ogg,video/*"
+             onchange="handleFileSelect(event,'${langCode}','${mod.id}')"/>
+      <span class="uz-icon">${uploaded ? '🔄' : '📤'}</span>
+      <div class="uz-title">${uploaded ? 'Click to replace video' : 'Click to upload video'}</div>
+      <div class="uz-sub">or drag &amp; drop your video file here</div>
+      <div class="uz-accept">MP4 · WebM · OGG · Max 50MB recommended</div>
+    </div>
+    <div class="upload-progress" id="prog-${langCode}-${mod.id}" style="display:none;">
+      <div class="upload-progress-fill" id="progfill-${langCode}-${mod.id}" style="width:0%"></div>
+    </div>
+  </div>`;
+}
+
+/* ── Switch language tab ── */
+function switchLangTab(code) {
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-lang') === code));
+  document.querySelectorAll('.lang-panel').forEach(p => p.classList.toggle('active', p.id === `lp-${code}`));
+}
+
+/* ── File select / drop ── */
+function handleFileSelect(event, lang, mod) {
+  const file = event.target.files[0];
+  if (file) processVideo(file, lang, mod);
+}
+
+function handleDrop(event, lang, mod) {
+  event.preventDefault();
+  document.getElementById(`uz-${lang}-${mod}`).classList.remove('drag-over');
+  const file = event.dataTransfer.files[0];
+  if (!file)                        { toast('⚠️ No file dropped', 'error'); return; }
+  if (!file.type.startsWith('video')){ toast('⚠️ Please drop a video file (MP4/WebM)', 'error'); return; }
+  processVideo(file, lang, mod);
+}
+
+/* ── Process and save video (tries API first, falls back to localStorage) ── */
+async function processVideo(file, lang, mod) {
+  if (!file.type.startsWith('video')) { toast('⚠️ Please select a video file', 'error'); return; }
+
+  const langLabel = LANG_INFO[lang]?.label || lang;
+  const modLabel  = MODULE_INFO[mod]?.title || mod;
+  const progEl    = document.getElementById(`prog-${lang}-${mod}`);
+  const fillEl    = document.getElementById(`progfill-${lang}-${mod}`);
+
+  toast(`⏳ Uploading "${file.name}"… please wait`, 'info');
+  progEl.style.display = 'block';
+
+  let pct = 0;
+  const anim = setInterval(() => {
+    pct = Math.min(pct + 2, 88);
+    fillEl.style.width = pct + '%';
+  }, 100);
+
+  try {
+    const backendOnline = await GW_API.isBackendOnline();
+
+    if (backendOnline && API.getToken()) {
+      /* ── Upload to MongoDB GridFS via backend API ── */
+      await API.videos.upload(lang, mod, file);
+      // Also save a lightweight reference in localStorage so frontend knows it exists
+      localStorage.setItem(`gw_vid_ref_${lang}_${mod}`, JSON.stringify({
+        name: file.name, size: file.size, saved: new Date().toISOString(), backend: true
+      }));
+    } else {
+      /* ── Fallback: save as base64 in localStorage ── */
+      await VID.save(lang, mod, file);
+    }
+
+    clearInterval(anim);
+    fillEl.style.width = '100%';
+    setTimeout(() => { progEl.style.display = 'none'; fillEl.style.width = '0%'; }, 800);
+
+    const modRow = document.getElementById(`mur-${lang}-${mod}`);
+    modRow.outerHTML = buildModRow(lang, MODULE_INFO[mod] ? { id:mod, ...MODULE_INFO[mod] } : { id:mod, icon:'📹', title:mod });
+
+    // Re-bind events for new row
+    const newInput = document.getElementById(`fi-${lang}-${mod}`);
+    if (newInput) newInput.onchange = e => handleFileSelect(e, lang, mod);
+
+    // Re-attach drop on new zone
+    const newZone = document.getElementById(`uz-${lang}-${mod}`);
+    if (newZone) {
+      newZone.ondragover  = e => { e.preventDefault(); newZone.classList.add('drag-over'); };
+      newZone.ondragleave = () => newZone.classList.remove('drag-over');
+      newZone.ondrop      = e => handleDrop(e, lang, mod);
+    }
+
+    updateStats();
+    // Update tab dot
+    const uploaded = MODS.filter(m => VID.exists(lang, m.id)).length;
+    const tab = document.querySelector(`.lang-tab[data-lang="${lang}"]`);
+    if (tab) {
+      tab.classList.toggle('has-videos', uploaded > 0);
+      tab.innerHTML = `<span class="lt-dot"></span>${LANG_INFO[lang].flag} ${LANG_INFO[lang].label} <span style="font-size:.7rem;opacity:.55;">(${uploaded}/5)</span>`;
+      tab.onclick = () => switchLangTab(lang);
+      tab.setAttribute('data-lang', lang);
+    }
+
+    toast(`✅ "${file.name}" uploaded for ${langLabel} — ${modLabel}!`, 'success');
+  } catch(err) {
+    clearInterval(anim);
+    progEl.style.display = 'none';
+    toast(`❌ ${err.message}`, 'error');
+  }
+}
+
+/* ── Delete video ── */
+async function deleteVideo(lang, mod) {
+  if (!confirm(`Remove the video for ${LANG_INFO[lang]?.label} — ${MODULE_INFO[mod]?.title}?`)) return;
+
+  try {
+    const backendOnline = await GW_API.isBackendOnline();
+    if (backendOnline && API.getToken()) {
+      await API.videos.delete(lang, mod);
+    }
+  } catch(e) {
+    console.warn('API delete failed:', e.message);
+  }
+
+  // Always remove local references
+  VID.remove(lang, mod);
+  localStorage.removeItem(`gw_vid_ref_${lang}_${mod}`);
+  const modObj = { id:mod, ...(MODULE_INFO[mod] || { icon:'📹', title:mod }) };
+  const row = document.getElementById(`mur-${lang}-${mod}`);
+  if (row) row.outerHTML = buildModRow(lang, modObj);
+  // Re-bind new row
+  const newInput = document.getElementById(`fi-${lang}-${mod}`);
+  if (newInput) newInput.onchange = e => handleFileSelect(e, lang, mod);
+
+  updateStats();
+  const uploaded = MODS.filter(m => VID.exists(lang, m.id)).length;
+  const tab = document.querySelector(`.lang-tab[data-lang="${lang}"]`);
+  if (tab) {
+    tab.classList.toggle('has-videos', uploaded > 0);
+    tab.innerHTML = `<span class="lt-dot"></span>${LANG_INFO[lang].flag} ${LANG_INFO[lang].label} <span style="font-size:.7rem;opacity:.55;">(${uploaded}/5)</span>`;
+    tab.onclick = () => switchLangTab(lang);
+    tab.setAttribute('data-lang', lang);
+  }
+  toast('🗑 Video removed', 'info');
+}
+
+/* ── Refresh panel ── */
+function refreshVideoPanel() { buildVideoPanel(); toast('🔄 Panel refreshed', 'info'); }
+
+/* ── Update stats (tries backend, falls back to localStorage) ── */
+async function updateStats() {
+  try {
+    const backendOnline = await GW_API.isBackendOnline();
+    if (backendOnline && API.getToken()) {
+      const data = await API.admin.stats();
+      document.getElementById('totalUsersN').textContent = data.stats.totalUsers || '0';
+      document.getElementById('totalVidsN').textContent  = data.stats.totalVideos || VID.listAll().length;
+      document.getElementById('videosCount').textContent = `🎬 ${VID.listAll().length} videos uploaded`;
+    } else {
+      // Local fallback
+      const allVids = VID.listAll();
+      document.getElementById('totalVidsN').textContent = allVids.length;
+      document.getElementById('videosCount').textContent = `🎬 ${allVids.length} videos (local)`;
+    }
+  } catch(e) {
+    const allVids = VID.listAll();
+    document.getElementById('totalVidsN').textContent = allVids.length;
+  }
+
+  // Storage estimate
+  let totalBytes = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('gw_vid_')) {
+      totalBytes += (localStorage.getItem(key) || '').length * 2;
+    }
+  }
+  const usedMB = (totalBytes / 1048576).toFixed(1);
+  const pct    = Math.min(100, (totalBytes / (8 * 1048576)) * 100).toFixed(0);
+  document.getElementById('storageUsed').textContent = `${usedMB} MB / ~8 MB`;
+  document.getElementById('storageFill').style.width = pct + '%';
+  document.getElementById('storageInfo').textContent = `💾 ${usedMB} MB used locally`;
+}
+
+/* ── Load users (tries backend, falls back to localStorage) ── */
+async function loadUsers() {
+  try {
+    const backendOnline = await GW_API.isBackendOnline();
+    if (backendOnline && API.getToken()) {
+      const data = await API.admin.users();
+      document.getElementById('totalUsersN').textContent = data.count || '0';
+      if (!data.users || !data.users.length) return;
+      const LANG_INFO_LOCAL = LANG_INFO;
+      document.getElementById('usersTbody').innerHTML = data.users.map(u => `
+        <tr>
+          <td><strong>${u.name}</strong></td>
+          <td style="font-size:.8rem;">${u.email}</td>
+          <td>${u.location || '—'}</td>
+          <td>${(LANG_INFO_LOCAL[u.lang] || {flag:'',label:u.lang}).flag} ${(LANG_INFO_LOCAL[u.lang] || {label:u.lang}).label}</td>
+          <td><span class="apill ${u.completionPct===100?'ap-green':u.completionPct>0?'ap-gold':'ap-red'}">${u.completedModules?.length||0}/5 modules</span></td>
+          <td>
+            ${!u.trainingApproved && u.completionPct===100
+              ? `<button class="ab ab-approve" onclick="approveUser('${u.id}')">✅ Approve</button>`
+              : `<span style="font-size:.77rem;color:rgba(255,255,255,.4);">${u.trainingApproved?'✅ Approved':'—'}</span>`
+            }
+          </td>
+        </tr>
+      `).join('');
+      return;
+    }
+  } catch(e) {
+    console.warn('API users failed:', e.message);
+  }
+
+  // LocalStorage fallback
+  const users = GW.get('registered_users') || [];
+  document.getElementById('totalUsersN').textContent = users.length || '0';
+  if (!users.length) return;
+  const completed = email => {
+    const key = 'prog_' + email.replace(/[^a-z0-9]/gi,'_');
+    return (GW.get(key) || []).length;
+  };
+  document.getElementById('usersTbody').innerHTML = users.map(u => `
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td style="font-size:.8rem;">${u.email}</td>
+      <td>${u.location || '—'}</td>
+      <td>${(LANG_INFO[u.lang]||{flag:'',label:u.lang}).flag} ${(LANG_INFO[u.lang]||{label:u.lang}).label}</td>
+      <td><span class="apill ${completed(u.email)===5?'ap-green':completed(u.email)>0?'ap-gold':'ap-red'}">${completed(u.email)}/5 modules</span></td>
+      <td><button class="ab ab-approve" onclick="toast('Action taken!','success')">⚡ Action</button></td>
+    </tr>
+  `).join('');
+}
+
+async function approveUser(userId) {
+  try {
+    const data = await API.admin.approveTraining(userId);
+    toast(`✅ ${data.message}`, 'success');
+    loadUsers();
+  } catch(e) {
+    toast(`❌ ${e.message}`, 'error');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildVideoPanel();
+  loadUsers();
+});
+</script>
+</body>
+</html>

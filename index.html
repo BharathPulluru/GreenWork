@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GreenWork – Organic Employment Platform</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+.hero{min-height:100vh;background:linear-gradient(155deg,var(--green-darkest) 0%,var(--green-dark) 45%,var(--green-mid) 80%,var(--green-bright) 100%);display:flex;align-items:center;padding:calc(var(--nav-h)+60px) 5% 80px;position:relative;overflow:hidden;}
+.ho{position:absolute;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;}
+.hero-content{max-width:620px;z-index:2;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(233,196,106,0.18);border:1px solid rgba(233,196,106,0.35);color:var(--gold);padding:7px 18px;border-radius:50px;font-size:.8rem;font-weight:600;letter-spacing:.5px;margin-bottom:24px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(3.2rem,8vw,5.8rem);font-weight:900;color:white;line-height:1.03;margin-bottom:8px;}
+.hero-title .ac{color:var(--gold);}
+.hero-tag{font-size:clamp(1rem,2.5vw,1.2rem);color:rgba(255,255,255,.76);font-weight:300;letter-spacing:.3px;line-height:1.65;margin-bottom:36px;}
+.hero-tag strong{color:var(--gold);font-weight:600;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px;}
+.hero-stats{display:flex;gap:38px;flex-wrap:wrap;}
+.hs .num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--gold);display:block;}
+.hs .lbl{font-size:.79rem;color:rgba(255,255,255,.6);}
+.hero-right{position:absolute;right:5%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;z-index:2;}
+.fc{background:rgba(255,255,255,0.1);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:18px;padding:18px 22px;color:white;min-width:230px;animation:fadeUp .7s ease both;}
+.fc:nth-child(2){animation-delay:.15s;}.fc:nth-child(3){animation-delay:.3s;}
+.fc .fci{font-size:1.5rem;margin-bottom:5px;}.fc h4{font-size:.94rem;font-weight:600;}.fc p{font-size:.79rem;color:rgba(255,255,255,.7);margin-top:3px;}
+/* steps */
+.steps{display:flex;gap:0;position:relative;justify-content:space-between;flex-wrap:wrap;}
+.stline{position:absolute;top:32px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,var(--green-light),var(--gold),var(--green-light));z-index:0;}
+.step{flex:1;min-width:140px;max-width:190px;text-align:center;z-index:1;padding:0 8px;}
+.step-circ{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--green-bright),var(--green-mid));border:4px solid white;box-shadow:0 6px 24px rgba(64,145,108,.32);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:white;}
+.step h3{font-size:.9rem;font-weight:700;color:var(--green-dark);margin-bottom:5px;}.step p{font-size:.79rem;color:var(--text-muted);line-height:1.5;}
+/* features */
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px;}
+.fc2{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:30px 24px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.fc2::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green-bright),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+.fc2:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);}.fc2:hover::after{transform:scaleX(1);}
+.fc2 h3{font-size:1.05rem;font-weight:700;color:var(--green-dark);margin:14px 0 9px;}.fc2 p{font-size:.87rem;color:var(--text-muted);line-height:1.65;}
+/* testi */
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(278px,1fr));gap:20px;}
+.tc{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:26px;}
+.tc-stars{color:var(--gold);font-size:.88rem;margin-bottom:10px;}.tc-txt{font-size:.88rem;color:rgba(255,255,255,.82);line-height:1.7;margin-bottom:16px;font-style:italic;}
+.tc-person{display:flex;align-items:center;gap:12px;}.tc-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--green-bright),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.tc-nm{font-weight:700;font-size:.86rem;color:white;}.tc-loc{font-size:.76rem;color:rgba(255,255,255,.5);}
+.cta-band{background:linear-gradient(135deg,var(--gold),var(--gold-dark));padding:68px 5%;text-align:center;}
+.cta-band h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:var(--green-darkest);margin-bottom:12px;}
+.cta-band p{color:var(--green-dark);font-size:1.02rem;margin-bottom:28px;opacity:.85;}
+@media(max-width:900px){.hero-right{display:none;}.stline{display:none;}}
+</style>
+</head>
+<body>
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">🌿 Green<span class="gw">Work</span></a>
+  <div class="nav-links"><a href="index.html" class="active">Home</a><a href="about.html">About</a><a href="training.html">Training</a><a href="work.html">Work</a></div>
+  <div class="nav-actions">
+    <div id="navUserInfo" style="display:none;align-items:center;"></div>
+    <a href="login.html"     class="btn btn-outline btn-sm" id="navLoginBtn">Login</a>
+    <a href="register.html"  class="btn btn-gold btn-sm"    id="navRegBtn">Register</a>
+    <a href="dashboard.html" class="btn btn-primary btn-sm" id="navDashBtn" style="display:none">My Dashboard</a>
+    <button class="btn btn-dark btn-sm" id="navLogoutBtn" style="display:none" onclick="GW.logout()">Logout</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="ho" style="width:600px;height:600px;top:-200px;right:-150px;"></div>
+  <div class="ho" style="width:320px;height:320px;bottom:-80px;left:-80px;"></div>
+  <div class="hero-content anim-fade-up">
+    <div class="hero-badge">🌱 Empowering Rural India Since 2024</div>
+    <h1 class="hero-title">Green<span class="ac">Work</span></h1>
+    <p class="hero-tag"><strong>Learn Organic Farming</strong> &nbsp;•&nbsp; <strong>Get Work</strong> &nbsp;•&nbsp; <strong>Earn Salary</strong><br/>Transforming unemployment into sustainable green livelihoods</p>
+    <div class="hero-btns">
+      <a href="register.html" class="btn btn-gold btn-lg">🚀 Start Free Training</a>
+      <a href="about.html" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,.5);color:white;">Learn More ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><span class="num">12,400+</span><span class="lbl">Trained Farmers</span></div>
+      <div class="hs"><span class="num">₹2.3Cr</span><span class="lbl">Salaries Paid</span></div>
+      <div class="hs"><span class="num">340+</span><span class="lbl">Partner Farms</span></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="fc"><div class="fci">🎓</div><h4>Free Training</h4><p>5 modules · Certification included</p></div>
+    <div class="fc"><div class="fci">💼</div><h4>Guaranteed Work</h4><p>Job allocated after training</p></div>
+    <div class="fc"><div class="fci">💰</div><h4>₹8K–₹25K/month</h4><p>Salary based on task type</p></div>
+  </div>
+</section>
+
+<section class="section-wrap alt">
+  <div style="text-align:center;margin-bottom:50px;"><span class="section-eyebrow">The Journey</span><h2 class="section-title">Your Path to Paid Organic Farming</h2></div>
+  <div class="steps reveal">
+    <div class="stline"></div>
+    <div class="step anim-fade-up"><div class="step-circ">1</div><div style="font-size:1.4rem;margin-bottom:7px;">📝</div><h3>Register</h3><p>Create your free GreenWork account</p></div>
+    <div class="step anim-fade-up anim-delay-1"><div class="step-circ">2</div><div style="font-size:1.4rem;margin-bottom:7px;">🎬</div><h3>Watch & Learn</h3><p>Complete 5 video training modules</p></div>
+    <div class="step anim-fade-up anim-delay-2"><div class="step-circ">3</div><div style="font-size:1.4rem;margin-bottom:7px;">🏆</div><h3>Get Certified</h3><p>Receive admin approval</p></div>
+    <div class="step anim-fade-up anim-delay-3"><div class="step-circ">4</div><div style="font-size:1.4rem;margin-bottom:7px;">💼</div><h3>Get Work</h3><p>Matched with real farm tasks</p></div>
+    <div class="step anim-fade-up anim-delay-4"><div class="step-circ">5</div><div style="font-size:1.4rem;margin-bottom:7px;">💰</div><h3>Earn Salary</h3><p>Monthly pay for completed work</p></div>
+  </div>
+</section>
+
+<section class="section-wrap">
+  <span class="section-eyebrow">What We Offer</span>
+  <h2 class="section-title">Everything to Succeed as an Organic Farmer</h2>
+  <p class="section-sub" style="margin-bottom:40px;">From free training videos to real salary — GreenWork handles your entire journey.</p>
+  <div class="fg reveal">
+    <div class="fc2"><div class="card-icon">🎓</div><h3>Free Video Training</h3><p>5 structured modules — composting, soil health, fertilizers, pest control — all free, anytime.</p></div>
+    <div class="fc2"><div class="card-icon">💼</div><h3>Guaranteed Placement</h3><p>94% of graduates get matched with real farm tasks within 30 days of completing training.</p></div>
+    <div class="fc2"><div class="card-icon">💰</div><h3>Transparent Salary</h3><p>Earn ₹8,000–₹25,000 per month. Track every payment on your personal dashboard.</p></div>
+    <div class="fc2"><div class="card-icon">🌍</div><h3>Eco-Friendly Impact</h3><p>Every trained farmer reduces chemical use and contributes to healthier, sustainable soil.</p></div>
+    <div class="fc2"><div class="card-icon">🏛️</div><h3>Govt. Scheme Info</h3><p>Stay updated on PM-Kisan, PMKVY and organic farming subsidies for your region.</p></div>
+    <div class="fc2"><div class="card-icon">📊</div><h3>Smart Dashboard</h3><p>One place for training progress, tasks, earnings, and payment status — all personalised.</p></div>
+  </div>
+</section>
+
+<section class="section-wrap dark">
+  <div style="text-align:center;margin-bottom:42px;"><span class="section-eyebrow">Success Stories</span><h2 class="section-title">Lives Changed Through GreenWork</h2></div>
+  <div class="tg reveal">
+    <div class="tc"><div class="tc-stars">★★★★★</div><p class="tc-txt">"I was unemployed for 2 years. After completing GreenWork's training, I now earn ₹14,000 a month doing what I love — farming."</p><div class="tc-person"><div class="tc-av">🧑‍🌾</div><div><div class="tc-nm">Ravi Kumar</div><div class="tc-loc">Warangal, Telangana</div></div></div></div>
+    <div class="tc"><div class="tc-stars">★★★★★</div><p class="tc-txt">"As a woman in a rural village, I had no income. GreenWork's free training changed everything. I'm now a certified organic farmer."</p><div class="tc-person"><div class="tc-av">👩‍🌾</div><div><div class="tc-nm">Lakshmi Devi</div><div class="tc-loc">Nizamabad, Telangana</div></div></div></div>
+    <div class="tc"><div class="tc-stars">★★★★★</div><p class="tc-txt">"The training videos are simple to understand. Within 45 days of registering I received my first salary. Truly life-changing."</p><div class="tc-person"><div class="tc-av">👨‍🌾</div><div><div class="tc-nm">Suresh Reddy</div><div class="tc-loc">Karimnagar, Telangana</div></div></div></div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <h2>Ready to Start Your Green Career?</h2>
+  <p>Join 12,400+ farmers already earning a sustainable income through organic farming.</p>
+  <a href="register.html" class="btn btn-dark btn-lg" id="ctaMainBtn">🌱 Register for Free Today</a>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div><div class="footer-logo">Green<span>Work</span> 🌿</div><p class="footer-desc">Empowering unemployed youth through free organic farming training and guaranteed work placement.</p><div class="footer-contact"><a href="mailto:hello@greenwork.in">📧 hello@greenwork.in</a><a href="#">📞 1800-GREEN-WORK</a><span>📍 Hyderabad, Telangana</span></div></div>
+    <div><h4>Platform</h4><ul><li><a href="training.html">Training Modules</a></li><li><a href="work.html">Work Opportunities</a></li><li><a href="dashboard.html">My Dashboard</a></li><li><a href="admin.html">Admin Panel</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a href="about.html">About Us</a></li><li><a href="#">Partner Farms</a></li><li><a href="#">Careers</a></li></ul></div>
+    <div><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 GreenWork. All rights reserved. 🇮🇳</span><div class="socials"><a class="social-btn">f</a><a class="social-btn">in</a><a class="social-btn">𝕏</a><a class="social-btn">▶</a></div></div>
+</footer>
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  updateNavAuth();
+  // Change CTA if already logged in
+  if(GW.isLoggedIn()){
+    const btn=document.getElementById('ctaMainBtn');
+    if(btn){btn.textContent='▶ Go to My Dashboard';btn.href='dashboard.html';}
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Dashboard – GreenWork</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+body { background: #f2f8f4; }
+
+.dash-hero {
+  background: linear-gradient(135deg, var(--green-darkest) 0%, var(--green-dark) 50%, var(--green-mid) 100%);
+  padding: calc(var(--nav-h) + 48px) 5% 90px; color: white; position: relative; overflow: hidden;
+}
+.dh-orb { position:absolute; border-radius:50%; background:rgba(255,255,255,.04); pointer-events:none; }
+.dh-orb-1 { width:300px; height:300px; top:-80px; right:-60px; }
+.dh-orb-2 { width:180px; height:180px; bottom:-40px; left:30%; }
+.dash-hero h1 { font-family:'Playfair Display',serif; font-size:2.1rem; font-weight:700; margin-bottom:5px; position:relative; }
+.dash-hero .sub { opacity:.72; font-size:.93rem; position:relative; }
+.dh-badges { display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; position:relative; }
+.dh-badge  {
+  display:inline-flex; align-items:center; gap:7px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
+  padding:5px 14px; border-radius:50px; font-size:.78rem;
+  backdrop-filter:blur(8px);
+}
+.dh-badge.lang-badge { background:rgba(233,196,106,.2); border-color:rgba(233,196,106,.4); color:var(--gold); }
+
+.dash-body { padding:0 5% 60px; margin-top:-50px; position:relative; z-index:2; }
+
+/* Stat cards */
+.stat-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:18px; margin-bottom:26px; }
+.sc { background:white; border-radius:var(--radius); padding:24px 20px; box-shadow:var(--shadow-sm); border:1px solid var(--border); }
+.sc-icon  { font-size:1.8rem; margin-bottom:10px; }
+.sc-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:5px; }
+.sc-value { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--green-dark); }
+.sc-value.gold { color:var(--gold-dark); }
+.sc-sub   { font-size:.78rem; color:var(--text-muted); margin-top:5px; }
+
+/* Dashboard grid */
+.dash-grid { display:grid; grid-template-columns:5fr 3fr; gap:22px; }
+.dp {
+  background:white; border-radius:var(--radius); padding:26px 24px;
+  box-shadow:var(--shadow-sm); border:1px solid var(--border); margin-bottom:22px;
+}
+.dp h2 {
+  font-size:.97rem; font-weight:700; color:var(--green-dark);
+  margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--green-mist);
+  display:flex; align-items:center; gap:8px;
+}
+
+/* Training rows */
+.tr-row { margin-bottom:13px; }
+.tr-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.tr-name { font-size:.86rem; font-weight:600; color:var(--text-dark); display:flex; align-items:center; gap:7px; }
+.tr-status { font-size:.75rem; font-weight:700; }
+.tr-status.done    { color:var(--green-bright); }
+.tr-status.pending { color:#bbb; }
+
+/* Locked work */
+.locked-work {
+  background:linear-gradient(135deg,#fff8e1,#fffde7);
+  border:2px dashed #f0c040; border-radius:var(--radius);
+  padding:30px 24px; text-align:center;
+}
+.lw-prog { background:var(--green-pale); border-radius:99px; height:7px; margin:14px 0; }
+.lw-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--green-bright),var(--gold)); transition:width .8s; }
+
+/* Work rows */
+.work-row { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--green-mist); }
+.work-row:last-child { border-bottom:none; }
+.wr-icon { width:42px; height:42px; background:var(--green-pale); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+.wr-info h4 { font-size:.88rem; font-weight:700; color:var(--green-dark); }
+.wr-info p  { font-size:.76rem; color:var(--text-muted); }
+.wr-pay { margin-left:auto; font-weight:700; color:var(--gold-dark); font-size:.93rem; flex-shrink:0; }
+
+/* Profile */
+.profile-avatar {
+  width:70px; height:70px; border-radius:50%;
+  background:linear-gradient(135deg,var(--green-bright),var(--green-mid));
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.9rem; margin:0 auto 12px;
+}
+.profile-name { text-align:center; font-weight:700; color:var(--green-dark); font-size:1.03rem; }
+.profile-role { text-align:center; font-size:.79rem; color:var(--text-muted); margin-bottom:16px; }
+.pr { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--green-mist); font-size:.84rem; }
+.pr:last-child { border-bottom:none; }
+.pr span:first-child { color:var(--text-muted); }
+.pr span:last-child  { font-weight:600; color:var(--text-dark); text-align:right; }
+
+/* Salary */
+table { width:100%; border-collapse:collapse; }
+th { background:var(--green-mist); padding:9px 12px; text-align:left; font-size:.73rem; text-transform:uppercase; letter-spacing:.5px; color:var(--text-mid); font-weight:700; }
+td { padding:11px 12px; border-bottom:1px solid var(--green-mist); font-size:.85rem; }
+tr:last-child td { border-bottom:none; }
+
+@media(max-width:900px) { .dash-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">🌿 Green<span class="gw">Work</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="training.html">Training</a>
+    <a href="work.html">Work</a>
+  </div>
+  <div class="nav-actions">
+    <div id="navUserInfo" style="display:none;align-items:center;"></div>
+    <a href="login.html"     class="btn btn-outline btn-sm" id="navLoginBtn">Login</a>
+    <a href="register.html"  class="btn btn-gold btn-sm"    id="navRegBtn">Register</a>
+    <a href="dashboard.html" class="btn btn-primary btn-sm" id="navDashBtn" style="display:none">My Dashboard</a>
+    <button class="btn btn-dark btn-sm" id="navLogoutBtn" style="display:none" onclick="GW.logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="dash-hero">
+  <div class="dh-orb dh-orb-1"></div>
+  <div class="dh-orb dh-orb-2"></div>
+  <h1 id="dashGreeting">Loading…</h1>
+  <p class="sub">Track your training, assigned work, and salary all in one place</p>
+  <div class="dh-badges" id="dhBadges"></div>
+</div>
+
+<div class="dash-body">
+  <div class="stat-cards" id="statCards"></div>
+  <div class="dash-grid">
+    <div>
+      <div class="dp" id="trainingPanel"></div>
+      <div class="dp" id="workPanel"></div>
+    </div>
+    <div>
+      <div class="dp" id="profilePanel"></div>
+      <div class="dp" id="salaryPanel"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/api.js"></script>
+<script>
+const MODS_META = [
+  { id:'basics',     icon:'🌱', name:'Organic Farming Basics' },
+  { id:'compost',    icon:'♻️', name:'Composting Techniques' },
+  { id:'soil',       icon:'🌾', name:'Soil Health Improvement' },
+  { id:'fertilizer', icon:'🌿', name:'Natural Fertilizers' },
+  { id:'pest',       icon:'🐛', name:'Organic Pest Control' },
+];
+
+function renderDashboard() {
+  if (!GW.requireLogin()) return;
+
+  const user      = GW.getUser();
+  const completed = GW.getCompleted();
+  const pct       = GW.completionPct();
+  const allDone   = GW.allComplete();
+  const langData  = GW.getLangData(user.lang || 'en');
+
+  // Greeting
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dashGreeting').textContent = `${greet}, ${user.name}! 🌿`;
+
+  // Badges
+  document.getElementById('dhBadges').innerHTML = `
+    <div class="dh-badge">📍 ${user.location || 'Location not set'}</div>
+    <div class="dh-badge lang-badge">${langData.flag} Videos: ${langData.label}</div>
+    <div class="dh-badge">📅 Joined ${user.joined || 'Recently'}</div>
+    ${allDone ? '<div class="dh-badge" style="background:rgba(233,196,106,.25);border-color:rgba(233,196,106,.4);">🏆 Certified</div>' : ''}
+  `;
+
+  // Stat cards
+  document.getElementById('statCards').innerHTML = `
+    <div class="sc">
+      <div class="sc-icon">📊</div>
+      <div class="sc-label">Training Progress</div>
+      <div class="sc-value">${pct}%</div>
+      <div class="progress-wrap" style="margin-top:10px;">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="sc-sub">${completed.length} of 5 modules done</div>
+    </div>
+    <div class="sc">
+      <div class="sc-icon">💼</div>
+      <div class="sc-label">Assigned Work</div>
+      <div class="sc-value">${allDone ? '2' : '—'}</div>
+      <div class="sc-sub">${allDone ? 'Active tasks assigned' : 'Unlock after training'}</div>
+    </div>
+    <div class="sc">
+      <div class="sc-icon">💰</div>
+      <div class="sc-label">Salary Earned</div>
+      <div class="sc-value gold">${allDone ? '₹23K' : '₹0'}</div>
+      <div class="sc-sub">${allDone ? 'This month total' : 'Pending training'}</div>
+    </div>
+    <div class="sc">
+      <div class="sc-icon">🏅</div>
+      <div class="sc-label">Certificates</div>
+      <div class="sc-value">${completed.length}<span style="font-size:1rem;color:var(--text-muted);">/5</span></div>
+      <div class="sc-sub" style="margin-top:8px;">
+        ${allDone
+          ? `<a href="certificate.html" style="color:var(--gold-dark);font-weight:700;font-size:.82rem;text-decoration:none;">🏆 View Certificate →</a>`
+          : `${completed.length} modules certified`
+        }
+      </div>
+      <div class="sc-sub">modules certified</div>
+    </div>
+  `;
+
+  // Training panel
+  document.getElementById('trainingPanel').innerHTML = `
+    <h2>📚 Training Progress
+      <span style="font-size:.72rem;font-weight:500;color:var(--text-muted);margin-left:auto;">${langData.flag} ${langData.label}</span>
+    </h2>
+    ${MODS_META.map(m => {
+      const done = completed.includes(m.id);
+      return `<div class="tr-row">
+        <div class="tr-head">
+          <span class="tr-name">${done ? '✅' : '⬜'} ${m.icon} ${m.name}</span>
+          <span class="tr-status ${done ? 'done' : 'pending'}">${done ? 'Completed ✅' : 'Not started'}</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-fill" style="width:${done ? '100%' : '0%'}; ${!done ? 'background:#eee;' : ''}"></div>
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="training.html" class="btn btn-primary btn-sm">${allDone ? '▶ Re-watch Modules' : 'Continue Training →'}</a>
+      ${allDone ? '<a href="certificate.html" class="btn btn-gold btn-sm">🏆 Get Certificate</a>' : ''}
+    </div>
+  `;
+
+  // Work panel
+  if (!allDone) {
+    document.getElementById('workPanel').innerHTML = `
+      <h2>💼 Assigned Work</h2>
+      <div class="locked-work">
+        <div style="font-size:2.5rem;margin-bottom:10px;">🔒</div>
+        <h3 style="font-size:1.05rem;font-weight:700;color:var(--green-dark);margin-bottom:8px;">Work Opportunities Locked</h3>
+        <p style="font-size:.85rem;color:var(--text-muted);line-height:1.6;">Complete all 5 training modules to unlock paid farming work assignments from our partner farms.</p>
+        <div class="lw-prog"><div class="lw-fill" style="width:${pct}%"></div></div>
+        <p style="font-size:.79rem;color:var(--text-muted);">${pct}% done — ${5 - completed.length} module${5 - completed.length !== 1 ? 's' : ''} remaining</p>
+        <a href="training.html" class="btn btn-primary btn-sm" style="margin-top:16px;">Go to Training →</a>
+      </div>
+    `;
+  } else {
+    document.getElementById('workPanel').innerHTML = `
+      <h2>💼 Assigned Work</h2>
+      <div class="work-row">
+        <div class="wr-icon">🌾</div>
+        <div class="wr-info"><h4>Crop Planting Support</h4><p>📍 Warangal, TS · Full-time</p></div>
+        <span class="wr-pay">₹12,000/mo</span>
+      </div>
+      <div class="work-row">
+        <div class="wr-icon">🏡</div>
+        <div class="wr-info"><h4>Farm Maintenance</h4><p>📍 Adilabad, TS · Full-time</p></div>
+        <span class="wr-pay">₹11,000/mo</span>
+      </div>
+      <div style="margin-top:14px;">
+        <a href="work.html" class="btn btn-outline btn-sm">Browse More Jobs →</a>
+      </div>
+    `;
+  }
+
+  // Profile panel
+  document.getElementById('profilePanel').innerHTML = `
+    <h2>👤 My Profile</h2>
+    <div class="profile-avatar">🧑‍🌾</div>
+    <div class="profile-name">${user.name}</div>
+    <div class="profile-role">Organic Farmer${allDone ? ' (Certified ✅)' : ' (In Training 📚)'}</div>
+    <div class="pr"><span>📧 Email</span><span style="font-size:.78rem;word-break:break-all;">${user.email}</span></div>
+    <div class="pr"><span>📞 Phone</span><span>${user.phone || 'Not set'}</span></div>
+    <div class="pr"><span>📍 Location</span><span>${user.location || 'Not set'}</span></div>
+    <div class="pr"><span>🌐 Language</span><span>${langData.flag} ${langData.label}</span></div>
+    <div class="pr"><span>📅 Joined</span><span>${user.joined || 'Recently'}</span></div>
+    <div class="pr"><span>🏅 Status</span>
+      <span style="color:${allDone ? 'var(--green-bright)' : 'var(--gold-dark)'};font-weight:700;">
+        ${allDone ? 'Certified ✅' : 'Training 📚'}
+      </span>
+    </div>
+  `;
+
+  // Salary panel
+  if (!allDone) {
+    document.getElementById('salaryPanel').innerHTML = `
+      <h2>💰 Payment History</h2>
+      <div style="text-align:center;padding:24px 0;">
+        <div style="font-size:2rem;margin-bottom:10px;">💸</div>
+        <p style="color:var(--text-muted);font-size:.85rem;line-height:1.6;">
+          No payments yet. Salary tracking starts after training is complete and work is assigned.
+        </p>
+      </div>
+    `;
+  } else {
+    document.getElementById('salaryPanel').innerHTML = `
+      <h2>💰 Payment History</h2>
+      <table>
+        <thead><tr><th>Task</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Crop Planting</td><td><strong>₹12,000</strong></td><td><span class="pill pill-green">Paid ✅</span></td></tr>
+          <tr><td>Farm Maintenance</td><td><strong>₹11,000</strong></td><td><span class="pill pill-gold">Pending ⏳</span></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--green-mist);display:flex;justify-content:space-between;font-size:.87rem;">
+        <span style="color:var(--text-muted);">Total Earned</span>
+        <span style="font-weight:700;color:var(--gold-dark);">₹23,000</span>
+      </div>
+    `;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!GW.requireLogin()) return;
+  updateNavAuth();
+
+  // Sync latest training progress from backend before rendering
+  try {
+    const backendOnline = await GW_API.isBackendOnline();
+    if (backendOnline && API.getToken()) {
+      await GW_API.syncProgress();
+    }
+  } catch(e) {
+    console.warn('Could not sync progress from backend:', e.message);
+  }
+
+  renderDashboard();
+});
+</script>
+</body>
+</html>

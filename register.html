@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Register – GreenWork</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+body { background: var(--green-mist); }
+.auth-page { min-height:100vh; display:grid; grid-template-columns:1fr 1.3fr; }
+
+.auth-left {
+  background: linear-gradient(160deg, var(--green-darkest), var(--green-mid));
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:80px 44px; color:white; text-align:center; overflow:hidden; position:relative;
+}
+.al-orb { position:absolute; border-radius:50%; background:rgba(255,255,255,.04); pointer-events:none; }
+.al-orb-1 { width:320px; height:320px; top:-80px; right:-80px; }
+.al-orb-2 { width:220px; height:220px; bottom:-60px; left:-50px; }
+.al-logo     { font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:900; color:white; margin-bottom:4px; z-index:1; }
+.al-logo span{ color:var(--gold); }
+.al-tagline  { font-size:.9rem; opacity:.7; margin-bottom:32px; z-index:1; }
+.al-perk     { display:flex; align-items:center; gap:14px; margin-bottom:14px; max-width:290px; z-index:1; text-align:left; }
+.al-perk-icon{ width:44px; height:44px; background:rgba(255,255,255,.1); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+.al-perk p   { font-size:.86rem; color:rgba(255,255,255,.8); line-height:1.4; }
+.al-stat-row { display:flex; gap:22px; margin-top:24px; z-index:1; }
+.al-stat .n  { font-family:'Playfair Display',serif; font-size:1.7rem; font-weight:700; color:var(--gold); display:block; }
+.al-stat .l  { font-size:.72rem; color:rgba(255,255,255,.55); }
+
+.auth-right {
+  display:flex; align-items:flex-start; justify-content:center; overflow-y:auto;
+  padding:calc(var(--nav-h)+30px) 50px 60px; background:white;
+}
+.auth-box { width:100%; max-width:480px; }
+.auth-box h2  { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:700; color:var(--green-dark); margin-bottom:4px; }
+.auth-box .sub{ font-size:.87rem; color:var(--text-muted); margin-bottom:24px; }
+
+/* ── Language picker ── */
+.lang-section { margin-bottom:22px; }
+.lang-section > label {
+  display:block; font-size:.82rem; font-weight:700; color:var(--text-mid);
+  margin-bottom:4px;
+}
+.lang-section .lang-hint {
+  font-size:.74rem; color:var(--text-muted); margin-bottom:10px;
+  display:flex; align-items:center; gap:5px;
+}
+.lang-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
+.lo {
+  border:1.5px solid var(--border); border-radius:var(--radius-sm);
+  padding:11px 8px 9px; cursor:pointer; text-align:center;
+  transition:all .2s; background:var(--green-mist); user-select:none;
+  position:relative;
+}
+.lo:hover               { border-color:var(--green-bright); background:var(--green-pale); }
+.lo.selected            { border-color:var(--green-bright); background:var(--green-pale); box-shadow:0 0 0 3px rgba(64,145,108,.14); }
+.lo-flag                { font-size:1.4rem; display:block; margin-bottom:5px; }
+.lo-name                { font-size:.71rem; font-weight:700; color:var(--text-dark); line-height:1.25; }
+.lo-check               {
+  display:none; width:18px; height:18px; border-radius:50%;
+  background:var(--green-bright); color:white; font-size:.6rem; font-weight:700;
+  align-items:center; justify-content:center; margin:5px auto 0;
+}
+.lo.selected .lo-check  { display:flex; }
+
+/* pw */
+.pw-wrap { position:relative; }
+.pw-wrap input { padding-right:46px !important; }
+.pw-eye { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:.9rem; color:var(--text-muted); }
+
+/* strength */
+.sbar { height:4px; border-radius:99px; margin-top:6px; background:#eee; overflow:hidden; }
+.sfill{ height:100%; border-radius:99px; transition:all .4s; }
+.stxt { font-size:.72rem; margin-top:4px; }
+
+/* field validation */
+.f-ok  { border-color:var(--green-bright) !important; background:white !important; }
+.f-err { border-color:#e74c3c !important; }
+
+.terms-note { font-size:.75rem; color:var(--text-muted); margin-top:14px; line-height:1.5; text-align:center; }
+.terms-note a { color:var(--green-bright); text-decoration:none; }
+.auth-footer { text-align:center; font-size:.87rem; color:var(--text-muted); margin-top:12px; }
+.auth-footer a { color:var(--green-bright); font-weight:600; text-decoration:none; }
+
+@media(max-width:800px) { .auth-left{display:none;} .auth-page{grid-template-columns:1fr;} .auth-right{padding:calc(var(--nav-h)+20px) 22px 50px;} }
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">🌿 Green<span class="gw">Work</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="training.html">Training</a>
+    <a href="work.html">Work</a>
+  </div>
+  <div class="nav-actions">
+    <div id="navUserInfo" style="display:none;align-items:center;"></div>
+    <a href="login.html"     class="btn btn-outline btn-sm" id="navLoginBtn">Login</a>
+    <a href="register.html"  class="btn btn-gold btn-sm"    id="navRegBtn" style="display:none">Register</a>
+    <a href="dashboard.html" class="btn btn-primary btn-sm" id="navDashBtn" style="display:none">My Dashboard</a>
+    <button class="btn btn-dark btn-sm" id="navLogoutBtn" style="display:none" onclick="GW.logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="auth-page">
+
+  <!-- ── LEFT ── -->
+  <div class="auth-left">
+    <div class="al-orb al-orb-1"></div>
+    <div class="al-orb al-orb-2"></div>
+    <div class="al-logo">Green<span>Work</span> 🌿</div>
+    <p class="al-tagline">Start your green journey today!</p>
+    <div class="al-perk"><div class="al-perk-icon">🌱</div><p>100% free organic farming training — all 5 modules</p></div>
+    <div class="al-perk"><div class="al-perk-icon">🌐</div><p>Training videos in your language — Telugu, Hindi, Tamil &amp; more</p></div>
+    <div class="al-perk"><div class="al-perk-icon">💼</div><p>Guaranteed job placement after completing training</p></div>
+    <div class="al-perk"><div class="al-perk-icon">💰</div><p>Earn ₹8,000–₹25,000/month at partner organic farms</p></div>
+    <div class="al-stat-row">
+      <div class="al-stat"><span class="n">12,400+</span><span class="l">Trained</span></div>
+      <div class="al-stat"><span class="n">94%</span><span class="l">Placed</span></div>
+      <div class="al-stat"><span class="n">Free</span><span class="l">Forever</span></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT FORM ── -->
+  <div class="auth-right">
+    <div class="auth-box">
+      <h2>Create Account</h2>
+      <p class="sub">Join 12,400+ farmers building a sustainable income through GreenWork</p>
+
+      <!-- Name & Phone -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name <span style="color:#e74c3c;">*</span></label>
+          <input type="text" id="rName" placeholder="Your full name" oninput="vf(this,'name')"/>
+        </div>
+        <div class="form-group">
+          <label>Phone Number <span style="color:#e74c3c;">*</span></label>
+          <input type="tel" id="rPhone" placeholder="+91 XXXXX XXXXX" oninput="vf(this,'phone')"/>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label>Email Address <span style="color:#e74c3c;">*</span></label>
+        <input type="email" id="rEmail" placeholder="you@example.com" oninput="vf(this,'email')"/>
+      </div>
+
+      <!-- Password -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Password <span style="color:#e74c3c;">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="rPass" placeholder="Min 8 characters" oninput="checkStr(this.value)"/>
+            <button type="button" class="pw-eye" onclick="tpw('rPass',this)">👁</button>
+          </div>
+          <div class="sbar"><div class="sfill" id="sfill"></div></div>
+          <div class="stxt" id="stxt"></div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password <span style="color:#e74c3c;">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="rPass2" placeholder="Repeat password" oninput="checkMatch()"/>
+            <button type="button" class="pw-eye" onclick="tpw('rPass2',this)">👁</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="form-group">
+        <label>Location (City, State) <span style="color:#e74c3c;">*</span></label>
+        <input type="text" id="rLocation" placeholder="e.g. Warangal, Telangana"/>
+      </div>
+
+      <!-- Language picker -->
+      <div class="lang-section">
+        <label>Preferred Language for Training Videos <span style="color:#e74c3c;">*</span></label>
+        <p class="lang-hint">🎬 Training videos will play in the language you select below</p>
+        <div class="lang-grid" id="langGrid"></div>
+        <input type="hidden" id="rLang" value=""/>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="doRegister()">🌱 Create My Free Account</button>
+
+      <p class="terms-note">
+        By registering you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+      </p>
+      <div class="auth-footer">Already have an account? <a href="login.html">Login here →</a></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/api.js"></script>
+<script>
+/* Build language grid from VIDEO_LIBRARY */
+function buildLangGrid() {
+  const langs = GW.getAvailableLangs();
+  document.getElementById('langGrid').innerHTML = langs.map(l => `
+    <div class="lo" onclick="selectLang('${l.code}',this)" data-code="${l.code}">
+      <span class="lo-flag">${l.flag}</span>
+      <div class="lo-name">${l.label}</div>
+      <div class="lo-check">✓</div>
+    </div>
+  `).join('');
+}
+
+function selectLang(code, el) {
+  document.querySelectorAll('.lo').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('rLang').value = code;
+}
+
+/* Validation */
+function vf(inp, type) {
+  let ok = false;
+  if (type === 'name')  ok = inp.value.trim().length >= 2;
+  if (type === 'email') ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+  if (type === 'phone') ok = /^[6-9]\d{9}$/.test(inp.value.replace(/\D/g,''));
+  inp.className = ok ? 'f-ok' : (inp.value ? 'f-err' : '');
+}
+
+function tpw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type  = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function checkStr(val) {
+  let s = 0;
+  if (val.length >= 8) s++;
+  if (/[A-Z]/.test(val)) s++;
+  if (/[0-9]/.test(val)) s++;
+  if (/[^A-Za-z0-9]/.test(val)) s++;
+  const cfg = [
+    {w:'0%',  c:'',        l:''},
+    {w:'25%', c:'#e74c3c', l:'Weak'},
+    {w:'50%', c:'#f39c12', l:'Fair'},
+    {w:'75%', c:'#f1c40f', l:'Good'},
+    {w:'100%',c:'#27ae60', l:'Strong ✅'},
+  ];
+  const r = cfg[s];
+  document.getElementById('sfill').style.cssText = `width:${r.w};background:${r.c}`;
+  const st = document.getElementById('stxt');
+  st.textContent = r.l; st.style.color = r.c;
+}
+
+function checkMatch() {
+  const p2 = document.getElementById('rPass2');
+  const p1 = document.getElementById('rPass').value;
+  p2.className = p2.value === p1 ? 'f-ok' : (p2.value ? 'f-err' : '');
+}
+
+/* Register */
+async function doRegister() {
+  const name     = document.getElementById('rName').value.trim();
+  const phone    = document.getElementById('rPhone').value.trim();
+  const email    = document.getElementById('rEmail').value.trim().toLowerCase();
+  const pass     = document.getElementById('rPass').value;
+  const pass2    = document.getElementById('rPass2').value;
+  const location = document.getElementById('rLocation').value.trim();
+  const lang     = document.getElementById('rLang').value;
+
+  if (!name)                         { toast('⚠️ Please enter your full name', 'error'); return; }
+  if (!phone)                        { toast('⚠️ Please enter your phone number', 'error'); return; }
+  if (!email || !email.includes('@')){ toast('⚠️ Please enter a valid email address', 'error'); return; }
+  if (pass.length < 8)               { toast('⚠️ Password must be at least 8 characters', 'error'); return; }
+  if (pass !== pass2)                { toast('⚠️ Passwords do not match', 'error'); return; }
+  if (!location)                     { toast('⚠️ Please enter your city and state', 'error'); return; }
+  if (!lang)                         { toast('⚠️ Please select your preferred language', 'error'); return; }
+
+  const btn = document.querySelector('.btn-primary.btn-full');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Creating account…'; }
+
+  const langLabel = (LANG_INFO[lang] || { label: 'English' }).label;
+
+  try {
+    /* ── Try backend API first ── */
+    const backendOnline = await GW_API.isBackendOnline();
+    if (backendOnline) {
+      const data = await GW_API.register({ name, phone, email, password: pass, location, lang });
+      toast(`🎉 Welcome, ${name.split(' ')[0]}! Training videos in ${langLabel}.`, 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1100);
+      return;
+    }
+  } catch(apiErr) {
+    if (apiErr.message && !apiErr.message.includes('connect')) {
+      if (btn) { btn.disabled = false; btn.textContent = '🌱 Create My Free Account'; }
+      toast(`❌ ${apiErr.message}`, 'error');
+      return;
+    }
+    console.warn('Backend offline, registering locally');
+  }
+
+  /* ── Fallback: localStorage registration ── */
+  const existing = GW.get('registered_users') || [];
+  if (existing.find(u => u.email === email)) {
+    if (btn) { btn.disabled = false; btn.textContent = '🌱 Create My Free Account'; }
+    toast('⚠️ This email is already registered. Please login.', 'error'); return;
+  }
+
+  const newUser = {
+    name, phone, email, password: pass, location, lang, langLabel,
+    joined: new Date().toLocaleDateString('en-IN', { month:'short', year:'numeric' }),
+  };
+  existing.push(newUser);
+  GW.set('registered_users', existing);
+
+  const { password, ...session } = newUser;
+  GW.login(session);
+
+  toast(`🎉 Welcome, ${name.split(' ')[0]}! (offline mode — sync when server is online)`, 'success');
+  setTimeout(() => window.location.href = 'dashboard.html', 1100);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (GW.isLoggedIn()) { window.location.href = 'dashboard.html'; return; }
+  buildLangGrid();
+});
+</script>
+</body>
+</html>

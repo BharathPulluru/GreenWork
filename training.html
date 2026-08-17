@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Training – GreenWork</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+.page-hero {
+  background: linear-gradient(155deg,var(--green-darkest) 0%,var(--green-dark) 60%,var(--green-mid) 100%);
+  padding: calc(var(--nav-h)+56px) 5% 68px; color:white;
+}
+.page-hero h1 { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,5vw,3.4rem); font-weight:700; margin-bottom:10px; }
+.page-hero p  { font-size:1rem; color:rgba(255,255,255,.72); max-width:560px; line-height:1.72; }
+.lang-badge   {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(233,196,106,.18); border:1px solid rgba(233,196,106,.4);
+  color:var(--gold); padding:6px 16px; border-radius:50px; font-size:.82rem; font-weight:600; margin-bottom:18px;
+}
+
+/* ── Overall card ── */
+.overall-card {
+  background:white; border-radius:var(--radius); padding:24px 28px;
+  box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:24px;
+  display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+}
+.oc-pct  { font-family:'Playfair Display',serif; font-size:3rem; font-weight:700; color:var(--green-bright); line-height:1; flex-shrink:0; }
+.oc-body { flex:1; min-width:200px; }
+.oc-body h3 { font-size:1rem; font-weight:700; color:var(--green-dark); margin-bottom:8px; }
+.oc-body p  { font-size:.81rem; color:var(--text-muted); margin-top:7px; }
+
+/* ── Unlock notice ── */
+.unlock-notice {
+  border-radius:var(--radius-sm); padding:14px 18px;
+  display:flex; align-items:flex-start; gap:12px;
+  margin-bottom:28px; font-size:.88rem; line-height:1.55;
+}
+.unlock-notice.locked   { background:#fff8e1; border:1.5px solid #f0c040; color:#6b4f00; }
+.unlock-notice.unlocked { background:var(--green-pale); border:1.5px solid var(--green-light); color:var(--green-dark); }
+
+/* ── Module cards ── */
+.mod-card {
+  background:white; border-radius:var(--radius);
+  border:1.5px solid var(--border); overflow:hidden; margin-bottom:16px;
+  transition:box-shadow .3s,transform .25s;
+}
+.mod-card:hover:not(.mod-locked) { box-shadow:var(--shadow); transform:translateY(-2px); }
+.mod-card.mod-done   { border-color:var(--green-light); }
+.mod-card.mod-locked { opacity:.5; pointer-events:none; }
+.mod-top  { display:flex; align-items:center; gap:16px; padding:20px 24px; }
+.mod-icon {
+  width:52px; height:52px; border-radius:16px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+  background:linear-gradient(135deg,var(--green-bright),var(--green-mid));
+}
+.mod-card.mod-done   .mod-icon { background:linear-gradient(135deg,#27ae60,#1e8449); }
+.mod-card.mod-locked .mod-icon { background:#ccc; }
+.mod-info h3 { font-size:1.04rem; font-weight:700; color:var(--green-dark); margin-bottom:4px; }
+.mod-info p  { font-size:.83rem; color:var(--text-muted); line-height:1.5; }
+.mod-footer  {
+  background:var(--green-mist); padding:12px 24px; border-top:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.mod-tag { font-size:.75rem; color:var(--text-muted); background:white; border:1px solid var(--border); padding:3px 10px; border-radius:50px; margin-right:5px; }
+
+/* ── VIDEO MODAL ── */
+.vmodal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.92); z-index:6000;
+  align-items:center; justify-content:center; backdrop-filter:blur(8px);
+}
+.vmodal.open { display:flex; }
+.vmbx {
+  background:white; border-radius:var(--radius);
+  width:min(820px,96vw); display:flex; flex-direction:column;
+  max-height:97vh; overflow:hidden; animation:mIn .3s ease;
+}
+@keyframes mIn { from{opacity:0;transform:scale(.93) translateY(20px)} to{opacity:1;transform:none} }
+
+.vm-head {
+  padding:16px 22px 13px; border-bottom:1px solid var(--border);
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-shrink:0;
+}
+.vm-head h3 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--green-dark); flex:1; }
+.vm-head p  { font-size:.77rem; color:var(--text-muted); margin-top:3px; }
+.vm-close   {
+  width:32px; height:32px; border-radius:50%;
+  background:var(--green-mist); border:none; font-size:.9rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .2s;
+}
+.vm-close:hover { background:var(--green-pale); }
+
+/* ── Native video player wrapper ── */
+.vm-video-wrap {
+  position:relative; background:#000; flex-shrink:0;
+  aspect-ratio:16/9; overflow:hidden;
+}
+.vm-video-wrap video {
+  width:100%; height:100%; display:block;
+  background:#000;
+}
+/* No-video placeholder */
+.vm-no-video {
+  position:absolute; inset:0;
+  background:linear-gradient(160deg,#0d1a10,#1a3a2a);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  color:white; gap:12px; text-align:center; padding:28px;
+}
+.vm-no-video .nv-icon { font-size:3rem; }
+.vm-no-video h4 { font-size:1.05rem; font-weight:700; }
+.vm-no-video p  { font-size:.84rem; opacity:.68; max-width:340px; line-height:1.55; }
+.vm-no-video a  { color:var(--gold); font-weight:700; font-size:.85rem; margin-top:4px; text-decoration:none; }
+.vm-no-video a:hover { text-decoration:underline; }
+
+/* Watch-progress bar */
+.vm-watchbar {
+  background:#111; padding:9px 18px;
+  display:flex; align-items:center; gap:14px; flex-shrink:0;
+}
+.wb-outer { flex:1; height:7px; background:rgba(255,255,255,.12); border-radius:99px; overflow:hidden; }
+.wb-fill  { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--green-bright),var(--gold)); transition:width .4s; width:0%; }
+.wb-label { font-size:.76rem; color:rgba(255,255,255,.55); white-space:nowrap; min-width:82px; text-align:right; }
+
+/* Footer */
+.vm-footer {
+  padding:15px 22px; background:var(--green-mist); border-top:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; flex-shrink:0;
+}
+.vm-hint { font-size:.82rem; color:var(--text-muted); line-height:1.4; }
+.vm-hint strong { display:block; color:var(--green-dark); margin-bottom:2px; }
+
+#markBtn { white-space:nowrap; transition:all .3s; }
+#markBtn:disabled {
+  background:#ddd!important; color:#999!important;
+  box-shadow:none!important; transform:none!important; cursor:not-allowed;
+}
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">🌿 Green<span class="gw">Work</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="training.html" class="active">Training</a>
+    <a href="work.html">Work</a>
+  </div>
+  <div class="nav-actions">
+    <div id="navUserInfo" style="display:none;align-items:center;"></div>
+    <a href="login.html"     class="btn btn-outline btn-sm" id="navLoginBtn">Login</a>
+    <a href="register.html"  class="btn btn-gold btn-sm"    id="navRegBtn">Register</a>
+    <a href="dashboard.html" class="btn btn-primary btn-sm" id="navDashBtn" style="display:none">My Dashboard</a>
+    <button class="btn btn-dark btn-sm" id="navLogoutBtn" style="display:none" onclick="GW.logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div id="langBadge"></div>
+  <span class="section-eyebrow" style="color:var(--gold);">5 Free Modules</span>
+  <h1>🎓 Organic Farming Training</h1>
+  <p>Watch each video fully — the <strong style="color:white;">Mark as Complete</strong> button only activates after watching at least 90% of the video.</p>
+</div>
+
+<div class="section-wrap">
+
+  <!-- Overall progress -->
+  <div class="overall-card">
+    <div class="oc-pct" id="ocPct">0%</div>
+    <div class="oc-body">
+      <h3>Your Training Progress</h3>
+      <div class="progress-wrap"><div class="progress-fill" id="ocBar" style="width:0%"></div></div>
+      <p id="ocLabel">0 of 5 modules completed — watch the videos to progress</p>
+    </div>
+  </div>
+
+  <!-- Unlock notice -->
+  <div class="unlock-notice locked" id="unlockNotice">
+    <span style="font-size:1.3rem;flex-shrink:0;">🔒</span>
+    <div>
+      <strong>Work opportunities unlock after completing all 5 modules.</strong>
+      Watch each video fully, then click Mark as Complete.
+      <a href="work.html" style="color:var(--green-bright);font-weight:600;margin-left:5px;">Preview jobs →</a>
+    </div>
+  </div>
+
+  <!-- Module list -->
+  <div id="modList"></div>
+
+</div>
+
+<!-- ═══ VIDEO MODAL ═══ -->
+<div class="vmodal" id="vmodal">
+  <div class="vmbx">
+
+    <div class="vm-head">
+      <div>
+        <h3 id="vmTitle">Loading…</h3>
+        <p id="vmDesc"></p>
+      </div>
+      <button class="vm-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Native video player -->
+    <div class="vm-video-wrap" id="vmVideoWrap">
+      <div class="vm-no-video" id="vmNoVideo">
+        <div class="nv-icon">📭</div>
+        <h4>No video uploaded yet</h4>
+        <p>The admin has not uploaded a video for this module in your language.</p>
+        <a href="admin.html">Admin: Upload video here →</a>
+      </div>
+    </div>
+
+    <!-- Watch progress bar -->
+    <div class="vm-watchbar" id="vmWatchBar" style="display:none;">
+      <div class="wb-outer"><div class="wb-fill" id="wbFill"></div></div>
+      <span class="wb-label" id="wbLabel">0% watched</span>
+    </div>
+
+    <!-- Footer -->
+    <div class="vm-footer">
+      <div class="vm-hint" id="vmHint">
+        <strong>Watch the full video to unlock completion</strong>
+        Mark as Complete button activates at 90% watched.
+      </div>
+      <button class="btn btn-primary" id="markBtn" disabled onclick="doMarkComplete()">
+        ⏳ Watch to Unlock
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/api.js"></script>
+<script>
+const MODS_LIST = [
+  { id:'basics',     icon:'🌱', title:'Organic Farming Basics',    desc:'Introduction to chemical-free, sustainable farming — natural cycles, crop rotation, organic certification.',   duration:'~45 min', tags:['Foundations','Crop Rotation','Basics'] },
+  { id:'compost',    icon:'♻️', title:'Composting Techniques',      desc:'Vermicomposting, pit composting, and waste-to-wealth methods for superior soil nutrition.',                  duration:'~50 min', tags:['Vermicompost','Pit Method','Waste Mgmt'] },
+  { id:'soil',       icon:'🌾', title:'Soil Health Improvement',    desc:'pH levels, microbial life, and natural restoration techniques to revive degraded farmland.',                  duration:'~45 min', tags:['Soil pH','Microbiome','Restoration'] },
+  { id:'fertilizer', icon:'🌿', title:'Natural Fertilizers',        desc:'Prepare jeevamrit, panchagavya, and powerful bio-fertilizers from farm waste.',                             duration:'~40 min', tags:['Jeevamrit','Panchagavya','Bio-Fert'] },
+  { id:'pest',       icon:'🐛', title:'Organic Pest Control',       desc:'Neem oil, companion planting, and bio-traps to manage pests without any chemicals.',                         duration:'~38 min', tags:['Neem Oil','Companion Planting','Bio'] },
+];
+
+let currentModId = null;
+let watchMax     = 0;
+let canMark      = false;
+let activeBlobUrl= null;   // hold reference to revoke on close
+
+/* ─── Render modules ─────────────────────────────────────────── */
+function renderMods() {
+  const completed = GW.getCompleted();
+  const pct       = GW.completionPct();
+  const lang      = GW.getUserLang();
+  const langData  = LANG_INFO[lang] || LANG_INFO['en'];
+
+  // Language badge
+  const lb = document.getElementById('langBadge');
+  if (lb) lb.innerHTML = `<div class="lang-badge">${langData.flag} Videos in: ${langData.label}</div>`;
+
+  // Overall
+  document.getElementById('ocPct').textContent = pct + '%';
+  document.getElementById('ocBar').style.width = pct + '%';
+  document.getElementById('ocLabel').textContent =
+    completed.length === 5
+      ? '🎉 All 5 modules completed — work is now unlocked!'
+      : `${completed.length} of 5 modules completed — watch the videos to progress`;
+
+  // Unlock notice
+  if (GW.allComplete()) {
+    const n = document.getElementById('unlockNotice');
+    n.className = 'unlock-notice unlocked';
+    n.innerHTML = `<span style="font-size:1.3rem;flex-shrink:0;">🎉</span>
+      <div><strong>Training Complete — Work Unlocked!</strong>
+      <a href="work.html" style="color:var(--green-bright);font-weight:600;margin-left:5px;">Apply for jobs →</a>
+      &nbsp;·&nbsp;
+      <a href="certificate.html" style="color:var(--gold-dark);font-weight:700;margin-left:5px;">🏆 Get Your Certificate →</a>
+      </div>`;
+  }
+
+  // Modules
+  document.getElementById('modList').innerHTML = MODS_LIST.map((m, i) => {
+    const done       = completed.includes(m.id);
+    const accessible = i === 0 || completed.includes(MODS_LIST[i-1].id);
+    const hasVideo   = VID.exists(lang, m.id);
+
+    let badge, action;
+    if (done) {
+      badge  = `<span class="pill pill-green">✅ Completed</span>`;
+      action = `<button class="btn btn-outline btn-sm" onclick="openModal('${m.id}')">▶ Re-watch</button>
+                <a href="certificate.html" class="btn btn-gold btn-sm" style="padding:8px 14px;font-size:.78rem;">🏆 Certificate</a>`;
+    } else if (!accessible) {
+      badge  = `<span class="pill pill-gray">🔒 Locked</span>`;
+      action = `<button class="btn btn-sm" style="background:#eee;color:#aaa;cursor:not-allowed;">Complete previous module first</button>`;
+    } else if (!hasVideo) {
+      badge  = `<span class="pill pill-red">📭 No Video</span>`;
+      action = `<button class="btn btn-sm" style="background:#fff3cd;color:#856404;cursor:default;">⏳ Video not uploaded yet</button>`;
+    } else {
+      badge  = `<span class="pill pill-gold">📖 Ready to Watch</span>`;
+      action = `<button class="btn btn-primary btn-sm" onclick="openModal('${m.id}')">▶ Watch &amp; Complete</button>`;
+    }
+
+    return `
+    <div class="mod-card ${done?'mod-done':''} ${!accessible&&!done?'mod-locked':''} reveal">
+      <div class="mod-top">
+        <div class="mod-icon">${done ? '✅' : m.icon}</div>
+        <div class="mod-info" style="flex:1;">
+          <h3>Module ${i+1}: ${m.title}</h3>
+          <p>${m.desc}</p>
+        </div>
+        <div style="flex-shrink:0;">${badge}</div>
+      </div>
+      <div class="mod-footer">
+        <div>
+          <span class="mod-tag">⏱ ${m.duration}</span>
+          ${m.tags.map(t => `<span class="mod-tag">${t}</span>`).join('')}
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">${action}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Re-trigger scroll reveal
+  setTimeout(() => {
+    const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('visible'); }), {threshold:.07});
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
+  }, 60);
+}
+
+/* ─── Open modal ─────────────────────────────────────────────── */
+function openModal(id) {
+  if (!GW.requireLogin()) return;
+
+  currentModId = id;
+  watchMax     = 0;
+  canMark      = false;
+
+  const m    = MODS_LIST.find(x => x.id === id);
+  const lang = GW.getUserLang();
+  const done = GW.isModuleComplete(id);
+
+  document.getElementById('vmTitle').textContent = m.title;
+  document.getElementById('vmDesc').textContent  = m.desc;
+
+  // Reset watch bar
+  document.getElementById('wbFill').style.width  = '0%';
+  document.getElementById('wbLabel').textContent = '0% watched';
+  document.getElementById('vmWatchBar').style.display = 'none';
+
+  // Footer state
+  const btn  = document.getElementById('markBtn');
+  const hint = document.getElementById('vmHint');
+  if (done) {
+    btn.disabled    = false;
+    btn.textContent = '✅ Already Completed';
+    btn.onclick     = null;
+    hint.innerHTML  = '<strong>Module already completed.</strong>You can re-watch the video anytime.';
+  } else {
+    btn.disabled    = true;
+    btn.textContent = '⏳ Watch to Unlock';
+    btn.onclick     = doMarkComplete;
+    hint.innerHTML  = '<strong>Watch the full video to unlock completion.</strong>Button activates at 90% watched.';
+  }
+
+  // Load video
+  loadNativeVideo(lang, id, m.title);
+  document.getElementById('vmodal').classList.add('open');
+}
+
+/* ─── Load native HTML5 video (API stream first, localStorage fallback) ─── */
+async function loadNativeVideo(lang, modId, title) {
+  const wrap = document.getElementById('vmVideoWrap');
+
+  // Revoke previous blob URL
+  if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); activeBlobUrl = null; }
+
+  /* ── Try backend API streaming first ── */
+  const backendOnline = await GW_API.isBackendOnline();
+  if (backendOnline && API.getToken()) {
+    try {
+      // Check if video exists on server for this lang+module
+      const check = await API.videos.check(lang);
+      if (check.available && check.available.includes(modId)) {
+        // Use backend stream URL — supports Range requests for seek tracking
+        const streamUrl = API.videos.streamUrl(lang, modId);
+        renderVideoPlayer(wrap, streamUrl, title, 'api');
+        return;
+      }
+    } catch(e) {
+      console.warn('Backend video check failed:', e.message);
+    }
+  }
+
+  /* ── Fallback: localStorage blob ── */
+  if (!VID.exists(lang, modId)) {
+    const langName = (LANG_INFO[lang] || LANG_INFO['en']).label;
+    wrap.innerHTML = `
+      <div class="vm-no-video">
+        <div class="nv-icon">📭</div>
+        <h4>No video uploaded yet</h4>
+        <p>No video found for <strong>${title}</strong> in <strong>${langName}</strong>.</p>
+        <a href="admin.html">Go to Admin Panel to upload →</a>
+      </div>`;
+    document.getElementById('vmWatchBar').style.display = 'none';
+    return;
+  }
+
+  const blobUrl = VID.getBlobUrl(lang, modId);
+  if (!blobUrl) {
+    wrap.innerHTML = `
+      <div class="vm-no-video">
+        <div class="nv-icon">⚠️</div>
+        <h4>Could not load video</h4>
+        <p>Error loading the local video. Please re-upload it from the Admin Panel.</p>
+        <a href="admin.html">Go to Admin Panel →</a>
+      </div>`;
+    return;
+  }
+
+  activeBlobUrl = blobUrl;
+  renderVideoPlayer(wrap, blobUrl, title, 'local');
+}
+
+/* ─── Render the HTML5 video player and attach tracking ─── */
+function renderVideoPlayer(wrap, src, title, source) {
+  // For API stream, we add Authorization header via fetch + blob approach
+  // For local blob, src is already a blob URL
+  wrap.innerHTML = `
+    <video id="mainVideo" controls controlsList="nodownload" preload="metadata"
+           style="width:100%;height:100%;display:block;background:#000;"
+           oncontextmenu="return false;">
+      <source src="${src}" type="video/mp4"/>
+      Your browser does not support HTML5 video.
+    </video>`;
+
+  document.getElementById('vmWatchBar').style.display = 'flex';
+
+  const vid = document.getElementById('mainVideo');
+
+  vid.addEventListener('timeupdate', () => {
+    if (vid.duration > 0) updateWatch((vid.currentTime / vid.duration) * 100);
+  });
+
+  vid.addEventListener('ended', () => updateWatch(100));
+
+  vid.addEventListener('error', (e) => {
+    console.error('Video error:', e);
+    // If backend stream fails (e.g. token expired), try local fallback
+    if (source === 'api') {
+      toast('⚠️ Stream error — trying local backup…', 'info');
+      const blobUrl = VID.getBlobUrl(GW.getUserLang(), currentModId);
+      if (blobUrl) {
+        activeBlobUrl = blobUrl;
+        renderVideoPlayer(wrap, blobUrl, title, 'local');
+      } else {
+        toast('⚠️ Video could not load. Please re-upload it.', 'error');
+      }
+    } else {
+      toast('⚠️ Video file could not be loaded. Please re-upload it.', 'error');
+    }
+  });
+}
+
+/* ─── Update watch % ─────────────────────────────────────────── */
+function updateWatch(pct) {
+  pct = Math.min(100, Math.round(pct));
+  if (pct <= watchMax) return;
+  watchMax = pct;
+
+  document.getElementById('wbFill').style.width  = watchMax + '%';
+  document.getElementById('wbLabel').textContent = watchMax + '% watched';
+
+  if (watchMax >= 90 && !canMark && !GW.isModuleComplete(currentModId)) {
+    canMark = true;
+    const btn  = document.getElementById('markBtn');
+    const hint = document.getElementById('vmHint');
+    btn.disabled    = false;
+    btn.textContent = '✅ Mark as Complete';
+    btn.onclick     = doMarkComplete;
+    hint.innerHTML  = '<strong style="color:var(--green-bright);">🎉 Video fully watched!</strong>Click to mark this module as complete.';
+    toast('🎉 You can now mark this module as complete!', 'success');
+  }
+}
+
+/* ─── Mark complete (API + localStorage) ────────────────────────── */
+async function doMarkComplete() {
+  if (!currentModId || GW.isModuleComplete(currentModId)) return;
+  if (!canMark) { toast('⚠️ Please watch the full video first', 'error'); return; }
+
+  const m = MODS_LIST.find(x => x.id === currentModId);
+
+  // Disable button to prevent double-click
+  const btn = document.getElementById('markBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving…';
+
+  try {
+    const backendOnline = await GW_API.isBackendOnline();
+    if (backendOnline && API.getToken()) {
+      // Mark complete on backend — this is the source of truth
+      await GW_API.markComplete(currentModId);
+    } else {
+      // Offline: mark in localStorage only
+      GW.markComplete(currentModId);
+    }
+  } catch(e) {
+    // Even if API fails, save locally so progress isn't lost
+    GW.markComplete(currentModId);
+    console.warn('API mark complete failed, saved locally:', e.message);
+  }
+
+  closeModal();
+  toast(`🏆 "${m.title}" completed! Great work!`, 'success');
+  renderMods();
+
+  if (GW.allComplete()) {
+    setTimeout(() => toast('🎉 All 5 modules done! Work unlocked + Certificate available!', 'info'), 1400);
+  }
+}
+
+/* ─── Close modal ────────────────────────────────────────────── */
+function closeModal() {
+  // Pause & remove video to free memory
+  const vid = document.getElementById('mainVideo');
+  if (vid) { vid.pause(); vid.src = ''; }
+
+  // Revoke blob URL
+  if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); activeBlobUrl = null; }
+
+  document.getElementById('vmodal').classList.remove('open');
+  document.getElementById('vmVideoWrap').innerHTML = `
+    <div class="vm-no-video" id="vmNoVideo">
+      <div class="nv-icon">📭</div>
+      <h4>No video uploaded yet</h4>
+      <p>The admin has not uploaded a video for this module in your language.</p>
+      <a href="admin.html">Admin: Upload video here →</a>
+    </div>`;
+  currentModId = null;
+}
+
+/* ─── Init ───────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  if (!GW.requireLogin()) return;
+  updateNavAuth();
+  renderMods();
+});
+</script>
+</body>
+</html>

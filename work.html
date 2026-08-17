@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Work Opportunities – GreenWork</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+.page-hero {
+  background: linear-gradient(155deg, var(--green-darkest) 0%, var(--green-dark) 60%, var(--green-mid) 100%);
+  padding: calc(var(--nav-h) + 60px) 5% 70px; color: white;
+}
+.page-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 700; margin-bottom: 10px;
+}
+.page-hero p { font-size: 1rem; color: rgba(255,255,255,.72); max-width: 540px; line-height: 1.7; }
+
+/* ── Gate banner ── */
+.gate {
+  border-radius: var(--radius); padding: 28px 32px;
+  margin-bottom: 32px; text-align: center;
+}
+.gate.locked {
+  background: linear-gradient(135deg, #fff8e1, #fffde7);
+  border: 2px dashed #f0c040;
+}
+.gate.unlocked {
+  background: linear-gradient(135deg, var(--green-pale), #c8f5d8);
+  border: 2px solid var(--green-light);
+}
+.gate .gi  { font-size: 2.8rem; margin-bottom: 12px; display: block; }
+.gate h2   { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--green-dark); margin-bottom: 8px; }
+.gate p    { font-size: .9rem; color: var(--text-muted); max-width: 460px; margin: 0 auto 18px; line-height: 1.6; }
+.mini-prog { max-width: 340px; margin: 0 auto 16px; }
+.mp-head   { display: flex; justify-content: space-between; font-size: .83rem; font-weight: 600; color: var(--green-dark); margin-bottom: 7px; }
+
+/* ── Filters ── */
+.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+.fb {
+  padding: 8px 18px; border-radius: 50px; border: 1.5px solid var(--border);
+  background: white; font-family: 'Sora', sans-serif;
+  font-size: .83rem; font-weight: 600; cursor: pointer; color: var(--text-mid); transition: all .2s;
+}
+.fb.active, .fb:hover { background: var(--green-dark); color: white; border-color: var(--green-dark); }
+
+/* ── Job cards ── */
+.work-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; }
+.wc {
+  background: white; border-radius: var(--radius);
+  border: 1.5px solid var(--border); padding: 26px;
+  transition: all .3s; position: relative; overflow: hidden;
+}
+.wc::before {
+  content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px;
+  background: linear-gradient(180deg, var(--green-bright), var(--gold));
+  transform: scaleY(0); transform-origin: bottom; transition: transform .3s;
+}
+.wc:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--green-light); }
+.wc:hover::before { transform: scaleY(1); }
+.wc-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.wc-title { font-size: 1.02rem; font-weight: 700; color: var(--green-dark); flex: 1; padding-right: 10px; }
+.wc-pay {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--green-darkest); font-weight: 700; font-size: .84rem;
+  padding: 5px 12px; border-radius: 50px; white-space: nowrap; flex-shrink: 0;
+}
+.wc-desc { font-size: .86rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; }
+.wc-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.wc-meta span { font-size: .79rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.wc-tags { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+
+/* empty state */
+.empty-state {
+  grid-column: 1/-1; text-align: center; padding: 60px 20px;
+  color: var(--text-muted); font-size: .95rem;
+}
+.empty-state .es-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">🌿 Green<span class="gw">Work</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="training.html">Training</a>
+    <a href="work.html" class="active">Work</a>
+  </div>
+  <div class="nav-actions">
+    <div id="navUserInfo" style="display:none; align-items:center;"></div>
+    <a href="login.html"     class="btn btn-outline btn-sm" id="navLoginBtn">Login</a>
+    <a href="register.html"  class="btn btn-gold btn-sm"    id="navRegBtn">Register</a>
+    <a href="dashboard.html" class="btn btn-primary btn-sm" id="navDashBtn" style="display:none">My Dashboard</a>
+    <button class="btn btn-dark btn-sm" id="navLogoutBtn" style="display:none" onclick="GW.logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <span class="section-eyebrow" style="color:var(--gold);">Real Farming Jobs</span>
+  <h1>Work Opportunities</h1>
+  <p>Verified farming tasks from 340+ partner organic farms across India. Complete all 5 training modules to apply.</p>
+</div>
+
+<div class="section-wrap">
+
+  <!-- Gate banner (locked / unlocked) -->
+  <div id="gateBanner"></div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button class="fb active" onclick="filterWork('all', this)">All Jobs</button>
+    <button class="fb" onclick="filterWork('fulltime', this)">Full-time</button>
+    <button class="fb" onclick="filterWork('parttime', this)">Part-time</button>
+    <button class="fb" onclick="filterWork('telangana', this)">Telangana</button>
+    <button class="fb" onclick="filterWork('andhra', this)">Andhra Pradesh</button>
+  </div>
+
+  <!-- Job grid -->
+  <div class="work-grid" id="workGrid"></div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Green<span>Work</span> 🌿</div>
+      <p class="footer-desc">Empowering unemployed youth through free organic farming training and guaranteed work placement.</p>
+      <div class="footer-contact">
+        <a href="mailto:hello@greenwork.in">📧 hello@greenwork.in</a>
+        <a href="tel:18004733673">📞 1800-GREEN-WORK</a>
+        <span>📍 Hyderabad, Telangana, India</span>
+      </div>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="training.html">Training Modules</a></li>
+        <li><a href="work.html">Work Opportunities</a></li>
+        <li><a href="dashboard.html">My Dashboard</a></li>
+        <li><a href="admin.html">Admin Panel</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="#">Partner Farms</a></li>
+        <li><a href="#">Success Stories</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 GreenWork. All rights reserved. | Built for sustainable India 🇮🇳</span>
+    <div class="socials">
+      <a class="social-btn" href="#">f</a>
+      <a class="social-btn" href="#">in</a>
+      <a class="social-btn" href="#">𝕏</a>
+      <a class="social-btn" href="#">▶</a>
+    </div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/api.js"></script>
+<script>
+const JOBS = [
+  { id:1, icon:'🌾', title:'Crop Planting Support',  pay:'₹12,000/mo', desc:'Assist in seasonal planting of paddy, wheat, and vegetables using certified organic methods.',              location:'Warangal, TS',   type:'fulltime', state:'telangana', tags:['Planting','Crop Care','Seasonal'] },
+  { id:2, icon:'♻️', title:'Compost Preparation',     pay:'₹9,000/mo',  desc:'Prepare vermicompost and bio-compost from farm waste for partner organic farms near Nizamabad.',          location:'Nizamabad, TS',  type:'parttime', state:'telangana', tags:['Composting','Waste Mgmt'] },
+  { id:3, icon:'🌱', title:'Soil Preparation',        pay:'₹10,500/mo', desc:'Condition soil beds using bio-fertilizers and natural supplements for maximum crop yield.',                 location:'Karimnagar, TS', type:'fulltime', state:'telangana', tags:['Soil Care','Fertilizer'] },
+  { id:4, icon:'💧', title:'Irrigation Support',      pay:'₹8,500/mo',  desc:'Manage drip irrigation and rain-water harvesting systems at certified organic farms.',                     location:'Khammam, TS',    type:'parttime', state:'telangana', tags:['Irrigation','Water Mgmt'] },
+  { id:5, icon:'🏡', title:'Farm Maintenance',        pay:'₹11,000/mo', desc:'General upkeep including weeding, pruning, and boundary maintenance at organic farms.',                     location:'Adilabad, TS',   type:'fulltime', state:'telangana', tags:['Maintenance','General'] },
+  { id:6, icon:'🐛', title:'Pest Monitoring',         pay:'₹13,000/mo', desc:'Monitor, report, and treat pest attacks using approved bio-pesticides and organic methods.',                location:'Medak, TS',      type:'fulltime', state:'telangana', tags:['Pest Control','Monitoring'] },
+  { id:7, icon:'🥬', title:'Vegetable Farming',       pay:'₹10,000/mo', desc:'Grow organic tomato, brinjal, and leafy greens on certified 5-acre plots with full support.',              location:'Guntur, AP',     type:'fulltime', state:'andhra',    tags:['Vegetables','Organic'] },
+  { id:8, icon:'🌻', title:'Herb & Flower Farming',   pay:'₹9,500/mo',  desc:'Cultivate medicinal herbs and organic flowers for export and local markets.',                               location:'Krishna, AP',    type:'parttime', state:'andhra',    tags:['Herbs','Flowers'] },
+  { id:9, icon:'🌴', title:'Coconut Farm Support',    pay:'₹10,000/mo', desc:'Assist with organic coconut cultivation, irrigation, and post-harvest processing tasks.',                   location:'West Godavari, AP', type:'fulltime', state:'andhra',  tags:['Coconut','Tree Crops'] },
+];
+
+function renderGate() {
+  const done  = GW.allComplete();
+  const pct   = GW.completionPct();
+  const count = GW.getCompleted().length;
+
+  document.getElementById('gateBanner').innerHTML = done
+    ? `<div class="gate unlocked">
+         <span class="gi">🎉</span>
+         <h2>Training Complete — Work Unlocked!</h2>
+         <p>Congratulations! All 5 modules are done. You can now apply for any farming job below.</p>
+         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+           <a href="dashboard.html" class="btn btn-primary">View My Dashboard →</a>
+           <a href="training.html" class="btn btn-outline" style="border-color:var(--green-bright);color:var(--green-bright);">View Certificates</a>
+         </div>
+       </div>`
+    : `<div class="gate locked">
+         <span class="gi">🔒</span>
+         <h2>Complete Training to Apply for Jobs</h2>
+         <p>You can browse available jobs below, but you must finish all 5 training modules before you can apply.</p>
+         <div class="mini-prog">
+           <div class="mp-head">
+             <span>Your Training Progress</span>
+             <span>${pct}% &nbsp;(${count} of 5 done)</span>
+           </div>
+           <div class="progress-wrap">
+             <div class="progress-fill" style="width:${pct}%"></div>
+           </div>
+         </div>
+         <a href="training.html" class="btn btn-primary">Go to Training →</a>
+       </div>`;
+}
+
+function renderJobs(filter) {
+  const unlocked = GW.allComplete();
+  const list = filter === 'all' ? JOBS : JOBS.filter(j => j.type === filter || j.state === filter);
+
+  if (list.length === 0) {
+    document.getElementById('workGrid').innerHTML = `
+      <div class="empty-state">
+        <span class="es-icon">🔍</span>
+        <p>No jobs found for this filter. Try "All Jobs".</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('workGrid').innerHTML = list.map(j => `
+    <div class="wc reveal">
+      <div class="wc-head">
+        <div class="wc-title">${j.icon} ${j.title}</div>
+        <span class="wc-pay">${j.pay}</span>
+      </div>
+      <p class="wc-desc">${j.desc}</p>
+      <div class="wc-meta">
+        <span>📍 ${j.location}</span>
+        <span>⏱ ${j.type === 'fulltime' ? 'Full-time' : 'Part-time'}</span>
+      </div>
+      <div class="wc-tags">
+        ${j.tags.map(t => `<span class="pill pill-green">${t}</span>`).join('')}
+      </div>
+      ${unlocked
+        ? `<button class="btn btn-primary btn-sm btn-full" onclick="applyJob('${j.title.replace(/'/g,"\\'")}')">Apply Now →</button>`
+        : `<button class="btn btn-sm btn-full" style="background:#eee;color:#999;cursor:not-allowed;" onclick="goTrain()">🔒 Complete Training to Apply</button>`
+      }
+    </div>
+  `).join('');
+
+  // re-trigger scroll reveal
+  setTimeout(() => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: .05 });
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
+  }, 60);
+}
+
+function filterWork(type, el) {
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderJobs(type);
+}
+
+function applyJob(title) {
+  if (!GW.isLoggedIn()) {
+    toast('⚠️ Please login to apply for jobs', 'error');
+    setTimeout(() => window.location.href = 'login.html', 1200);
+    return;
+  }
+  toast(`✅ Application submitted for "${title}"! Our admin team will review shortly.`, 'success');
+}
+
+function goTrain() {
+  toast('Complete all 5 training modules first to apply for work', 'info');
+  setTimeout(() => window.location.href = 'training.html', 900);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateNavAuth();
+  renderGate();
+  renderJobs('all');
+});
+</script>
+</body>
+</html>

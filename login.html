@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Login – GreenWork</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+body { background: var(--green-mist); }
+.auth-page {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+}
+
+/* ── Left green panel ── */
+.auth-left {
+  background: linear-gradient(160deg, var(--green-darkest) 0%, var(--green-dark) 50%, var(--green-mid) 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 50px; color: white; text-align: center; position: relative; overflow: hidden;
+}
+.al-orb { position: absolute; border-radius: 50%; background: rgba(255,255,255,.04); pointer-events: none; }
+.al-orb-1 { width: 360px; height: 360px; top: -100px; right: -100px; }
+.al-orb-2 { width: 240px; height: 240px; bottom: -60px; left: -60px; }
+.al-logo    { font-family:'Playfair Display',serif; font-size:2.8rem; font-weight:900; color:white; margin-bottom:6px; z-index:1; }
+.al-logo span { color: var(--gold); }
+.al-tagline { font-size: .95rem; opacity: .7; margin-bottom: 40px; z-index: 1; }
+.al-perk    { display:flex; align-items:center; gap:14px; margin-bottom:14px; max-width:300px; z-index:1; text-align:left; }
+.al-perk-icon { width:44px; height:44px; background:rgba(255,255,255,.1); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+.al-perk p  { font-size:.87rem; color:rgba(255,255,255,.8); line-height:1.4; }
+.al-stat-row { display:flex; gap:28px; margin-top:32px; z-index:1; }
+.al-stat .n { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; color:var(--gold); display:block; }
+.al-stat .l { font-size:.73rem; color:rgba(255,255,255,.55); }
+
+/* ── Right form panel ── */
+.auth-right {
+  display: flex; align-items: center; justify-content: center;
+  padding: calc(var(--nav-h) + 50px) 50px 60px; background: white;
+}
+.auth-box { width: 100%; max-width: 400px; }
+.auth-box h2 { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--green-dark); margin-bottom:4px; }
+.auth-box .sub { font-size:.88rem; color:var(--text-muted); margin-bottom:28px; }
+
+/* Password toggle */
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 46px !important; }
+.pw-eye {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; font-size: .9rem;
+  color: var(--text-muted); padding: 4px;
+}
+
+/* Remember / forgot row */
+.rem-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.rem-row label { display:flex; align-items:center; gap:8px; font-size:.82rem; color:var(--text-muted); cursor:pointer; }
+.rem-row label input { accent-color: var(--green-bright); }
+.rem-row a { font-size:.82rem; color:var(--green-bright); text-decoration:none; font-weight:600; }
+
+.auth-footer { text-align:center; font-size:.86rem; color:var(--text-muted); margin-top:14px; }
+.auth-footer a { color:var(--green-bright); font-weight:600; text-decoration:none; }
+
+@media(max-width:800px) {
+  .auth-left  { display: none; }
+  .auth-page  { grid-template-columns: 1fr; }
+  .auth-right { padding: calc(var(--nav-h)+24px) 24px 40px; }
+}
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">🌿 Green<span class="gw">Work</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="training.html">Training</a>
+    <a href="work.html">Work</a>
+  </div>
+  <div class="nav-actions">
+    <div id="navUserInfo" style="display:none;align-items:center;"></div>
+    <a href="login.html"     class="btn btn-outline btn-sm" id="navLoginBtn" style="display:none">Login</a>
+    <a href="register.html"  class="btn btn-gold btn-sm"    id="navRegBtn">Register Free</a>
+    <a href="dashboard.html" class="btn btn-primary btn-sm" id="navDashBtn" style="display:none">My Dashboard</a>
+    <button class="btn btn-dark btn-sm" id="navLogoutBtn" style="display:none" onclick="GW.logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="auth-page">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="auth-left">
+    <div class="al-orb al-orb-1"></div>
+    <div class="al-orb al-orb-2"></div>
+    <div class="al-logo">Green<span>Work</span> 🌿</div>
+    <p class="al-tagline">Welcome back, farmer!</p>
+    <div class="al-perk">
+      <div class="al-perk-icon">🎓</div>
+      <p>Continue your organic farming training where you left off</p>
+    </div>
+    <div class="al-perk">
+      <div class="al-perk-icon">🌐</div>
+      <p>Videos play automatically in your preferred language</p>
+    </div>
+    <div class="al-perk">
+      <div class="al-perk-icon">💼</div>
+      <p>Check new work assignments and farming job opportunities</p>
+    </div>
+    <div class="al-perk">
+      <div class="al-perk-icon">💰</div>
+      <p>View your salary payments and full earnings history</p>
+    </div>
+    <div class="al-stat-row">
+      <div class="al-stat"><span class="n">12,400+</span><span class="l">Trained</span></div>
+      <div class="al-stat"><span class="n">94%</span><span class="l">Placed</span></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT FORM ── -->
+  <div class="auth-right">
+    <div class="auth-box">
+      <h2>Sign In</h2>
+      <p class="sub">Enter your registered email and password to continue</p>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPass" placeholder="Enter your password"
+                 autocomplete="current-password"
+                 onkeydown="if(event.key==='Enter') doLogin()"/>
+          <button type="button" class="pw-eye" onclick="togglePw()">👁</button>
+        </div>
+      </div>
+
+      <div class="rem-row">
+        <label><input type="checkbox" id="rememberMe"/> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Login to GreenWork →</button>
+
+      <div class="auth-footer" style="margin-top:22px;">
+        Don't have an account? <a href="register.html">Register for free →</a>
+      </div>
+      <div class="auth-footer" style="margin-top:10px;">
+        Admin access? <a href="admin.html">Admin Panel →</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+<script src="js/app.js"></script>
+<script src="js/api.js"></script>
+<script>
+function togglePw() {
+  const inp = document.getElementById('loginPass');
+  const btn = document.querySelector('.pw-eye');
+  inp.type        = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('loginPass').value;
+
+  if (!email)               { toast('⚠️ Please enter your email address', 'error'); return; }
+  if (!email.includes('@')) { toast('⚠️ Please enter a valid email address', 'error'); return; }
+  if (!pass)                { toast('⚠️ Please enter your password', 'error'); return; }
+
+  const btn = document.querySelector('.btn-primary.btn-full');
+  if (btn) { btn.disabled = true; btn.textContent = 'Logging in…'; }
+
+  try {
+    /* ── Try backend API first ── */
+    const backendOnline = await GW_API.isBackendOnline();
+    if (backendOnline) {
+      const data = await GW_API.login(email, pass);
+      toast(`✅ Welcome back, ${data.user.name.split(' ')[0]}!`, 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 900);
+      return;
+    }
+  } catch(apiErr) {
+    // If backend is online but credentials wrong, show that error
+    if (apiErr.message && !apiErr.message.includes('connect')) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Login to GreenWork →'; }
+      toast(`❌ ${apiErr.message}`, 'error');
+      return;
+    }
+    // Backend offline — fall through to localStorage
+    console.warn('Backend offline, trying local login');
+  }
+
+  /* ── Fallback: localStorage login ── */
+  const registered = GW.get('registered_users') || [];
+  const found = registered.find(u => u.email === email && u.password === pass);
+  if (found) {
+    const { password, ...session } = found;
+    GW.login(session);
+    const langLabel = (LANG_INFO[session.lang || 'en'] || { label:'English' }).label;
+    toast(`✅ Welcome back, ${session.name.split(' ')[0]}! (offline mode)`, 'success');
+    setTimeout(() => window.location.href = 'dashboard.html', 900);
+    return;
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Login to GreenWork →'; }
+  toast('❌ Incorrect email or password', 'error');
+}
+
+/* Redirect to dashboard if already logged in */
+document.addEventListener('DOMContentLoaded', () => {
+  if (GW.isLoggedIn()) window.location.href = 'dashboard.html';
+});
+</script>
+</body>
+</html>
